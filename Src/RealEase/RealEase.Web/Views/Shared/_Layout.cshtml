@@ -12,38 +12,63 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f6f8fc;
         }
 
         .navbar {
-            background: linear-gradient(to right, #2C3E50, #4CA1AF);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #1b4fe0, #163faa);
+            padding: 14px 32px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        .navbar-brand, .nav-link {
-            color: #f8f9fa !important;
+        .navbar-brand,
+        .nav-link {
+            color: #e9edff !important;
             font-weight: 500;
+            transition: 0.25s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.2px;
         }
 
         .nav-link:hover {
-            text-decoration: underline;
+            color: #ffffff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
         }
+
+       
+        .navbar-brand i {
+            margin-right: 6px;
+            font-size: 1.4rem;
+        }
+
 
         footer {
-            background-color: #2C3E50;
-            padding: 1rem 0;
-            margin-top: 2rem;
+            background: linear-gradient(135deg, #163faa, #1b4fe0);
+            padding: 1.2rem 0;
+            margin-top: 2.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            text-align: center;
         }
 
-        footer a {
-            color: #ccc;
-            text-decoration: none;
-        }
+            footer a {
+                color: #d7ddff;
+                text-decoration: none;
+                transition: 0.25s ease;
+            }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+                footer a:hover {
+                    color: #ffffff;
+                    text-decoration: underline;
+                }
     </style>
+
 </head>
 <body>
     <header>
@@ -57,10 +82,10 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacidad</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Usuarios</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Benefits">Beneficios</a></li>
+                        @* <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Usuarios</a></li> *@
                         <li class="nav-item"><a class="nav-link" asp-controller="Properties" asp-action="Index">Propiedades</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Visits" asp-action="Index">Visitas</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Contracts" asp-action="Index">Contratos</a></li>
@@ -79,7 +104,7 @@
 
     <footer class="text-center text-white">
         <div class="container">
-            &copy; 2025 - RealEase - <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
+            &copy; 2025 - RealEase - <a asp-controller="Home" asp-action="Benefits">Beneficios</a>
         </div>
     </footer>
 

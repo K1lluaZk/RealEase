@@ -1,21 +1,35 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "RealEase - Encuentra tu espacio ideal";
 }
 
-<div class="home-hero">
-    <h1>Bienvenido a <span class="brand-name">RealEase</span></h1>
-    <p>Tu plataforma confiable para encontrar, gestionar y alquilar propiedades en República Dominicana.</p>
-    <a href="/Properties" class="cta-button">Explora Propiedades</a>
-   
-</div>
+<div class="home-section">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            Descubre espacios con <span class="highlight">comodidad y estilo</span>.
+        </h1>
 
-<div class="property-card">
-    <img src="https://img.100r.systems/img/f3078eb5c74714cdbdc8029ee46da09c.jpg" alt="Propiedad" class="property-image" />
-    <div class="property-info">
-        <h2 class="property-title">Apartamento Moderno</h2>
-        <p class="property-price">$1,200/mes</p>
-        <button class="cta-button">Ver más</button>
+        <p class="hero-subtitle">
+            Tu plataforma confiable para publicar, gestionar y alquilar propiedades en República Dominicana.
+        </p>
+
+        <a href="/Properties" class="cta-button hero-cta">Explorar Propiedades</a>
     </div>
 </div>
 
+<section class="featured-section">
+    <h2 class="section-title">Propiedad Destacada</h2>
 
+    <div class="property-card">
+        <img src="https://img.100r.systems/img/f3078eb5c74714cdbdc8029ee46da09c.jpg"
+             alt="Propiedad destacada"
+             class="property-image" />
+
+        <div class="property-info">
+            <h3 class="property-title">Apartamento Moderno</h3>
+            <p class="property-location">Santo Domingo · 2 hab · 1 baño</p>
+            <p class="property-price">$1,200 / mes</p>
+
+            <a href="/Properties/Details/1" class="cta-button property-cta">Ver más</a>
+        </div>
+    </div>
+</section>
