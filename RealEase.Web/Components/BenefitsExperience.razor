@@ -1,0 +1,76 @@
+@using Microsoft.AspNetCore.Components
+
+<section class="benefits-page">
+    <div class="benefits-hero">
+        <div class="benefits-hero-copy">
+            <span class="eyebrow"><i class="bi bi-stars"></i> Tu próximo lugar empieza aquí</span>
+            <h1>Encontrar hogar debería sentirse <span>fácil.</span></h1>
+            <p>Explora espacios con información clara, agenda una visita y gestiona cada paso desde un solo lugar.</p>
+            <div class="benefits-hero-actions">
+                <a class="btn btn-realease btn-lg" href="/Properties">Explorar propiedades <i class="bi bi-arrow-right"></i></a>
+                <a class="benefits-secondary-link" href="/Visits">Cómo funciona</a>
+            </div>
+            <div class="benefits-trust-row">
+                <span><i class="bi bi-shield-check"></i> Publicaciones transparentes</span>
+                <span><i class="bi bi-calendar2-check"></i> Visitas organizadas</span>
+            </div>
+        </div>
+        <div class="benefits-hero-art" aria-label="Ilustración de un hogar moderno">
+            <div class="art-sun"></div>
+            <div class="art-building">
+                <div class="art-roof"></div>
+                <div class="art-window art-window-one"></div>
+                <div class="art-window art-window-two"></div>
+                <div class="art-door"></div>
+                <div class="art-plant"><i></i><i></i><i></i></div>
+            </div>
+            <div class="art-caption"><i class="bi bi-geo-alt-fill"></i><span><b>Un lugar para ti</b><small>Tu próxima historia comienza en casa</small></span></div>
+        </div>
+    </div>
+
+    <div class="benefits-heading">
+        <span class="eyebrow">Una experiencia pensada para ti</span>
+        <h2>Todo lo que necesitas, en un solo lugar</h2>
+        <p>Menos vueltas. Más claridad para tomar una buena decisión.</p>
+    </div>
+
+    <div class="benefit-grid">
+        @foreach (var benefit in Benefits)
+        {
+            <button type="button" class="benefit-tile @(_selected == benefit.Title ? "is-selected" : "")" @onclick="() => SelectBenefit(benefit.Title)" aria-expanded="@(_selected == benefit.Title)">
+                <span class="benefit-icon @benefit.Tone"><i class="bi @benefit.Icon"></i></span>
+                <span class="benefit-tile-copy"><b>@benefit.Title</b><span>@benefit.Summary</span></span>
+                <i class="bi bi-arrow-up-right benefit-arrow"></i>
+            </button>
+        }
+    </div>
+
+    @if (_selected is not null)
+    {
+        var selectedBenefit = Benefits.First(item => item.Title == _selected);
+        <div class="benefit-detail" role="status">
+            <span class="benefit-detail-icon"><i class="bi @selectedBenefit.Icon"></i></span>
+            <div><b>@selectedBenefit.Title</b><p>@selectedBenefit.Detail</p></div>
+            <button type="button" class="btn-close ms-auto" aria-label="Cerrar" @onclick="() => _selected = null"></button>
+        </div>
+    }
+
+    <div class="benefits-bottom-cta">
+        <div><span class="eyebrow">Tu próximo paso</span><h2>¿Listo para encontrar tu espacio?</h2><p>Descubre opciones que se ajustan a lo que estás buscando.</p></div>
+        <a class="btn btn-light btn-lg" href="/Properties">Ver propiedades <i class="bi bi-arrow-right"></i></a>
+    </div>
+</section>
+
+@code {
+    private string? _selected;
+
+    private static readonly (string Icon, string Tone, string Title, string Summary, string Detail)[] Benefits =
+    [
+        ("bi-patch-check", "tone-coral", "Información clara", "Conoce los detalles de cada espacio antes de visitarlo.", "Consulta fotos, ubicación, características y precio en una publicación fácil de entender."),
+        ("bi-calendar2-heart", "tone-lilac", "Visitas sin complicaciones", "Coordina una visita y mantén todo organizado.", "Revisa las visitas agendadas y los detalles importantes para aprovechar cada recorrido."),
+        ("bi-file-earmark-text", "tone-amber", "Gestión en un mismo lugar", "Consulta contratos y pagos con mayor claridad.", "Accede a la información de tus acuerdos y pagos desde una sola experiencia."),
+        ("bi-shield-lock", "tone-mint", "Más tranquilidad", "Una experiencia diseñada alrededor de la confianza.", "Mantén la información relevante de propiedades, visitas y acuerdos reunida en la plataforma.")
+    ];
+
+    private void SelectBenefit(string title) => _selected = _selected == title ? null : title;
+}
