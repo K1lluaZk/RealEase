@@ -1,0 +1,56 @@
+@model List<RealEase.Application.Dtos.Contract.ContractDto>
+
+@{
+    ViewData["Title"] = "Contratos";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div><h1 class="h2 mb-1">Contratos</h1><p class="text-secondary mb-0">Acuerdos de alquiler asociados a clientes, agentes y propiedades.</p></div>
+    <a asp-action="Create" class="btn btn-success">＋ Nuevo contrato</a>
+</div>
+
+@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
+@if (TempData["Error"] is string error) { <div class="alert alert-danger">@error</div> }
+@if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning">@apiError</div> }
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 pt-3 px-3 d-flex justify-content-between align-items-center gap-3">
+        <h2 class="h6 mb-0">Listado de contratos</h2>
+        <input id="contractSearch" class="form-control form-control-sm" style="max-width:300px" placeholder="Buscar por cliente, propiedad o estado" />
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>ID</th><th>Cliente</th><th>Agente</th><th>Propiedad</th><th>Vigencia</th><th>Total</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody>
+            @foreach (var contract in Model)
+            {
+                <tr class="contract-row" data-search="@($"{contract.Id} {contract.ClientId} {contract.AgentId} {contract.PropertyId} {contract.Status}".ToLowerInvariant())">
+                    <td class="text-secondary">#@contract.Id</td>
+                    <td class="text-break" style="max-width:160px">@contract.ClientId</td>
+                    <td class="text-break" style="max-width:160px">@(contract.AgentId?.ToString() ?? "—")</td>
+                    <td><a asp-controller="Properties" asp-action="Details" asp-route-id="@contract.PropertyId">#@contract.PropertyId</a></td>
+                    <td>@contract.StartDate.ToString("d") – @contract.EndDate.ToString("d")</td>
+                    <td class="text-nowrap">@contract.TotalAmount.ToString("C")</td>
+                    <td><span class="badge text-bg-light">@contract.Status</span></td>
+                    <td><div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Details" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form asp-action="DeleteFromApi" asp-route-id="@contract.Id" method="post" onsubmit="return confirm('¿Eliminar este contrato?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
+                    </div></td>
+                </tr>
+            }
+            @if (Model.Count == 0) { <tr><td colspan="8" class="py-5 text-center text-secondary">No hay contratos registrados.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer bg-white text-secondary small">@Model.Count contrato(s)</div>
+</div>
+
+@section Scripts {
+<script>
+document.getElementById('contractSearch')?.addEventListener('input', event => {
+    const query = event.target.value.trim().toLocaleLowerCase();
+    document.querySelectorAll('.contract-row').forEach(row => row.classList.toggle('d-none', !row.dataset.search.includes(query)));
+});
+</script>
+}

@@ -1,0 +1,99 @@
+﻿@using RealEase.Domain.Entities
+@model Visit
+
+@{
+    ViewData["Title"] = "Editar Visita";
+}
+
+<h1 class="text-center text-success">Editar Visita</h1>
+<hr />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h4 class="card-title text-secondary">Detalles de la Visita</h4>
+                    <form asp-action="Edit" id="editVisitForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="form-group mb-3">
+                            <label asp-for="PropertyId" class="form-label">ID Propiedad</label>
+                            <input type="number" step="1" class="form-control" id="propertyIdInput" name="PropertyId" value="@Model.PropertyId" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="UserId" class="form-label">ID Usuario</label>
+                            <input type="text" class="form-control" id="userIdInput" name="UserId" value="@Model.UserId" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="VisitDate" class="form-label">Fecha de Visita</label>
+                            <input type="datetime-local" class="form-control" id="visitDateInput" name="VisitDate" value="@Model.VisitDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Status" class="form-label">Estado</label>
+                            <input class="form-control" id="statusInput" name="Status" value="@Model.Status" placeholder="Ej. Disponible" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Notes" class="form-label">Notas</label>
+                            <input class="form-control" id="notesInput" name="Notes" value="@Model.Notes" />
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" id="UpdateVisitButton" class="btn btn-primary">Guardar</button>
+                            <a href="/Visits" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#UpdateVisitButton').click(function (e) {
+                e.preventDefault();
+                var visitId = $('input[name="Id"]').val();
+
+                console.log('Visit ID:', visitId);
+
+                var updatedVisit = {
+                    Id: visitId,
+                    PropertyId: $('#propertyIdInput').val(),
+                    UserId: $('#userIdInput').val(),
+                    VisitDate: new Date($('#visitDateInput').val()).toISOString(),
+                    Status: $('#statusInput').val(),
+                    Notes: $('#notesInput').val()
+
+
+                };
+
+                $.ajax({
+                    url: window.realEaseApiBaseUrl + 'api/Visits',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updatedVisit),
+                    success: function () {
+                        alert('Visit updated successfully');
+                        window.location.href = '/Visits';
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                        alert('An error occurred while updating the visit.');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+

@@ -1,0 +1,21 @@
+@using RealEase.Domain.Entities
+@model Contract
+
+@{
+    ViewData["Title"] = "Detalles del contrato";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Contratos · #@Model.Id</span><h1>Detalles del contrato</h1><p>Revisa las partes, la vigencia y el monto acordado.</p></div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a contratos</a>
+</div>
+<div class="detail-card card border-0">
+    <div class="detail-card-header"><span class="detail-icon"><i class="bi bi-file-earmark-text"></i></span><div><span class="eyebrow">Acuerdo #@Model.Id</span><h2>@Model.TotalAmount.ToString("C")</h2></div><span class="status-pill">@(Model.Status ?? "Sin estado")</span></div>
+    <div class="detail-grid">
+        <div><span>Cliente</span><strong class="text-break">@Model.ClientId</strong></div>
+        <div><span>Agente</span><strong class="text-break">@(Model.AgentId?.ToString() ?? "Sin agente")</strong></div>
+        <div><span>Propiedad</span><strong>#@Model.PropertyId</strong></div>
+        <div><span>Vigencia</span><strong>@Model.StartDate.ToString("d") – @Model.EndDate.ToString("d")</strong></div>
+    </div>
+    <div class="detail-actions"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-realease"><i class="bi bi-pencil-square"></i> Editar contrato</a></div>
+</div>

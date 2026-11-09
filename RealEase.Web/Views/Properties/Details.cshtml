@@ -1,0 +1,37 @@
+@using RealEase.Domain.Entities
+@model Property
+
+@{
+    ViewData["Title"] = Model.Title;
+    var image = Model.Images?.FirstOrDefault();
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Propiedad · #@Model.Id</span><h1>@Model.Title</h1><p><i class="bi bi-geo-alt"></i> @Model.Address</p></div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a propiedades</a>
+</div>
+
+<article class="property-detail-card card border-0">
+    @if (!string.IsNullOrWhiteSpace(image))
+    {
+        <img class="property-detail-cover" src="@image" alt="Fotografía de @Model.Title" />
+    }
+    else
+    {
+        <div class="property-detail-placeholder"><i class="bi bi-house"></i><span>Esta propiedad aún no tiene fotografías</span></div>
+    }
+    <div class="property-detail-body">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+            <div><span class="badge text-bg-light mb-2">@Model.PropertyType</span><h2>@Model.Title</h2><p class="text-secondary"><i class="bi bi-geo-alt"></i> @Model.Address</p></div>
+            <div class="property-detail-price"><strong>@Model.PricePerNight.ToString("C")</strong><span>por noche</span></div>
+        </div>
+        <div class="property-facts">
+            <div><i class="bi bi-people"></i><span>Capacidad</span><strong>@(Model.MaxGuests ?? 0) huéspedes</strong></div>
+            <div><i class="bi bi-door-open"></i><span>Habitaciones</span><strong>@(Model.Bedrooms ?? 0)</strong></div>
+            <div><i class="bi bi-droplet"></i><span>Baños</span><strong>@(Model.Bathrooms ?? 0)</strong></div>
+            <div><i class="bi bi-check-circle"></i><span>Estado</span><strong>@(Model.Status ?? "Sin estado")</strong></div>
+        </div>
+        <section class="property-description"><h3>Acerca del espacio</h3><p>@(Model.Description ?? "No se ha añadido una descripción todavía.")</p></section>
+        <div class="detail-actions d-flex gap-2"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-realease"><i class="bi bi-pencil-square"></i> Editar propiedad</a><a asp-controller="Visits" asp-action="Create" class="btn btn-light">Agendar visita</a></div>
+    </div>
+</article>

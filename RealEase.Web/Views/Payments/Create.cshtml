@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Registrar pago";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Pagos</span><h1>Registrar un pago</h1><p>Completa los datos del movimiento para guardarlo.</p></div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<form id="createPaymentForm" class="form-surface card border-0">
+    <div class="form-surface-heading"><span class="detail-icon"><i class="bi bi-credit-card-2-front"></i></span><div><h2>Información del pago</h2><p>Los campos marcados son necesarios para registrar el pago.</p></div></div>
+    <div id="paymentFormError" class="alert alert-danger d-none" role="alert"></div>
+    <div class="row g-3">
+        <div class="col-md-6"><label for="contractIdInput" class="form-label">Contrato <span class="text-secondary">(opcional)</span></label><input id="contractIdInput" type="number" min="1" step="1" class="form-control" placeholder="ID del contrato" /></div>
+        <div class="col-md-6"><label for="tenantIdInput" class="form-label">UUID del inquilino</label><input id="tenantIdInput" class="form-control" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" required /></div>
+        <div class="col-md-6"><label for="paymentDateInput" class="form-label">Fecha y hora</label><input id="paymentDateInput" type="datetime-local" class="form-control" required /></div>
+        <div class="col-md-6"><label for="amountInput" class="form-label">Monto</label><div class="input-group"><span class="input-group-text">$</span><input id="amountInput" type="number" min="0" step="0.01" class="form-control" placeholder="0.00" required /></div></div>
+        <div class="col-md-6"><label for="paymentMethodInput" class="form-label">Método de pago</label><select id="paymentMethodInput" class="form-select" required><option value="" selected disabled>Selecciona un método</option><option>Transferencia bancaria</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></div>
+        <div class="col-md-6"><label for="statusInput" class="form-label">Estado</label><select id="statusInput" class="form-select"><option value="pending">Pendiente</option><option value="completed">Completado</option><option value="failed">Fallido</option><option value="refunded">Reembolsado</option></select></div>
+    </div>
+    <div class="form-surface-actions"><a asp-action="Index" class="btn btn-light">Cancelar</a><button type="submit" class="btn btn-realease"><i class="bi bi-check2-circle"></i> Guardar pago</button></div>
+</form>
+
+@section Scripts {
+<script>
+(() => {
+    const form = document.getElementById('createPaymentForm');
+    const message = document.getElementById('paymentFormError');
+    const date = document.getElementById('paymentDateInput');
+    date.value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        message.classList.add('d-none');
+        const payload = {
+            ContractId: document.getElementById('contractIdInput').value ? Number(document.getElementById('contractIdInput').value) : null,
+            TenantId: document.getElementById('tenantIdInput').value.trim(),
+            PaymentDate: new Date(date.value).toISOString(),
+            Amount: Number(document.getElementById('amountInput').value),
+            PaymentMethod: document.getElementById('paymentMethodInput').value,
+            Status: document.getElementById('statusInput').value
+        };
+        try {
+            const response = await fetch(window.realEaseApiBaseUrl + 'api/Payments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(await response.text() || 'No se pudo registrar el pago.');
+            window.location.assign('/Payments');
+        } catch (error) {
+            message.textContent = error.message || 'No se pudo conectar con la API.';
+            message.classList.remove('d-none');
+        }
+    });
+})();
+</script>
+}

@@ -1,0 +1,57 @@
+@using RealEase.Domain.Entities
+@model Payment
+
+@{
+    ViewData["Title"] = "Editar pago";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Pagos · #@Model.Id</span><h1>Editar pago</h1><p>Actualiza los datos y guarda los cambios.</p></div>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver al pago</a>
+</div>
+
+<form id="editPaymentForm" class="form-surface card border-0">
+    <input type="hidden" id="paymentIdInput" value="@Model.Id" />
+    <div class="form-surface-heading"><span class="detail-icon"><i class="bi bi-pencil-square"></i></span><div><h2>Información del pago</h2><p>Contrato vacío significa que este pago no está asociado a uno.</p></div></div>
+    <div id="paymentFormError" class="alert alert-danger d-none" role="alert"></div>
+    <div class="row g-3">
+        <div class="col-md-6"><label for="contractIdInput" class="form-label">Contrato <span class="text-secondary">(opcional)</span></label><input id="contractIdInput" type="number" min="1" step="1" class="form-control" value="@Model.ContractId" /></div>
+        <div class="col-md-6"><label for="tenantIdInput" class="form-label">UUID del inquilino</label><input id="tenantIdInput" class="form-control" value="@Model.TenantId" required /></div>
+        <div class="col-md-6"><label for="paymentDateInput" class="form-label">Fecha y hora</label><input id="paymentDateInput" type="datetime-local" class="form-control" value="@Model.PaymentDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required /></div>
+        <div class="col-md-6"><label for="amountInput" class="form-label">Monto</label><div class="input-group"><span class="input-group-text">$</span><input id="amountInput" type="number" min="0" step="0.01" class="form-control" value="@Model.Amount" required /></div></div>
+        <div class="col-md-6"><label for="paymentMethodInput" class="form-label">Método de pago</label><input id="paymentMethodInput" class="form-control" value="@Model.PaymentMethod" required /></div>
+        <div class="col-md-6"><label for="statusInput" class="form-label">Estado</label><input id="statusInput" class="form-control" value="@Model.Status" required /></div>
+    </div>
+    <div class="form-surface-actions"><a asp-action="Index" class="btn btn-light">Cancelar</a><button type="submit" class="btn btn-realease"><i class="bi bi-check2-circle"></i> Guardar cambios</button></div>
+</form>
+
+@section Scripts {
+<script>
+(() => {
+    const form = document.getElementById('editPaymentForm');
+    const message = document.getElementById('paymentFormError');
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        message.classList.add('d-none');
+        const contractValue = document.getElementById('contractIdInput').value;
+        const payload = {
+            Id: Number(document.getElementById('paymentIdInput').value),
+            ContractId: contractValue ? Number(contractValue) : null,
+            TenantId: document.getElementById('tenantIdInput').value.trim(),
+            PaymentDate: new Date(document.getElementById('paymentDateInput').value).toISOString(),
+            Amount: Number(document.getElementById('amountInput').value),
+            PaymentMethod: document.getElementById('paymentMethodInput').value,
+            Status: document.getElementById('statusInput').value
+        };
+        try {
+            const response = await fetch(window.realEaseApiBaseUrl + 'api/Payments', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(await response.text() || 'No se pudo actualizar el pago.');
+            window.location.assign('/Payments');
+        } catch (error) {
+            message.textContent = error.message || 'No se pudo conectar con la API.';
+            message.classList.remove('d-none');
+        }
+    });
+})();
+</script>
+}

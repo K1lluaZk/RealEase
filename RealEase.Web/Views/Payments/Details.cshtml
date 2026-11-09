@@ -1,0 +1,21 @@
+﻿@using RealEase.Domain.Entities
+@model Payment
+
+@{
+    ViewData["Title"] = "Detalles del Pago";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Resumen del movimiento</span><h1>Detalles del pago</h1><p>Consulta el estado y la información asociada a este pago.</p></div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a pagos</a>
+</div>
+<div class="detail-card card border-0">
+    <div class="detail-card-header"><span class="detail-icon"><i class="bi bi-credit-card-2-front"></i></span><div><span class="eyebrow">Pago #@Model.Id</span><h2>@Model.Amount.ToString("C")</h2></div><span class="status-pill">@Model.Status</span></div>
+    <div class="detail-grid">
+        <div><span>Contrato</span><strong>@(Model.ContractId?.ToString() ?? "Sin contrato asociado")</strong></div>
+        <div><span>Inquilino</span><strong class="text-break">@Model.TenantId</strong></div>
+        <div><span>Fecha</span><strong>@Model.PaymentDate.ToLocalTime().ToString("f")</strong></div>
+        <div><span>Método</span><strong>@Model.PaymentMethod</strong></div>
+    </div>
+    <div class="detail-actions"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-realease"><i class="bi bi-pencil-square"></i> Editar pago</a></div>
+</div>

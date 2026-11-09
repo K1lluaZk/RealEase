@@ -1,0 +1,55 @@
+@model List<RealEase.Application.Dtos.Visit.VisitDto>
+
+@{
+    ViewData["Title"] = "Visitas";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div><h1 class="h2 mb-1">Visitas</h1><p class="text-secondary mb-0">Agenda y seguimiento de visitas a propiedades.</p></div>
+    <a asp-action="Create" class="btn btn-success">＋ Agendar visita</a>
+</div>
+
+@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
+@if (TempData["Error"] is string error) { <div class="alert alert-danger">@error</div> }
+@if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning">@apiError</div> }
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 pt-3 px-3 d-flex justify-content-between align-items-center gap-3">
+        <h2 class="h6 mb-0">Listado de visitas</h2>
+        <input id="visitSearch" class="form-control form-control-sm" style="max-width:300px" placeholder="Buscar por ID, estado o nota" />
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>ID</th><th>Propiedad</th><th>Usuario</th><th>Fecha</th><th>Estado</th><th>Notas</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody id="visitRows">
+            @foreach (var visit in Model)
+            {
+                <tr class="visit-row" data-search="@($"{visit.Id} {visit.PropertyId} {visit.UserId} {visit.Status} {visit.Notes}".ToLowerInvariant())">
+                    <td class="text-secondary">#@visit.Id</td>
+                    <td><a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId">#@visit.PropertyId</a></td>
+                    <td class="text-break" style="max-width:180px">@visit.UserId</td>
+                    <td>@visit.VisitDate.ToLocalTime().ToString("g")</td>
+                    <td><span class="badge text-bg-light">@(visit.Status ?? "Sin estado")</span></td>
+                    <td class="text-secondary" style="max-width:240px">@(string.IsNullOrWhiteSpace(visit.Notes) ? "—" : visit.Notes)</td>
+                    <td><div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Details" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form asp-action="DeleteFromApi" asp-route-id="@visit.Id" method="post" onsubmit="return confirm('¿Eliminar esta visita?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
+                    </div></td>
+                </tr>
+            }
+            @if (Model.Count == 0) { <tr><td colspan="7" class="py-5 text-center text-secondary">No hay visitas registradas.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer bg-white text-secondary small">@Model.Count visita(s)</div>
+</div>
+
+@section Scripts {
+<script>
+document.getElementById('visitSearch')?.addEventListener('input', event => {
+    const query = event.target.value.trim().toLocaleLowerCase();
+    document.querySelectorAll('.visit-row').forEach(row => row.classList.toggle('d-none', !row.dataset.search.includes(query)));
+});
+</script>
+}

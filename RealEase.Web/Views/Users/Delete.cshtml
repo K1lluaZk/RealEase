@@ -1,0 +1,88 @@
+﻿@using RealEase.Domain.Entities
+@model User
+
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
+
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="bg-red-50 border border-red-100 rounded-2xl p-6 text-center mb-8">
+        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+            </svg>
+        </div>
+        <h1 class="text-xl font-bold text-red-900">¿Confirmas que deseas eliminar este usuario?</h1>
+        <p class="mt-1 text-sm text-red-700">Esta acción removerá la cuenta del sistema de forma permanente y revocará todos sus accesos.</p>
+    </div>
+
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500">Perfil de Usuario</h2>
+        </div>
+
+        <div class="divide-y divide-gray-100 px-6">
+            <div class="py-3.5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <span class="text-sm font-medium text-gray-500">Nombre Completo</span>
+                <span class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 font-semibold">
+                    @Model.FirstName @Model.LastName
+                </span>
+            </div>
+
+            <div class="py-3.5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <span class="text-sm font-medium text-gray-500">Correo Electrónico</span>
+                <span class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 font-mono">
+                    @Model.Email
+                </span>
+            </div>
+
+            <div class="py-3.5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <span class="text-sm font-medium text-gray-500">Teléfono</span>
+                <span class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                    @(string.IsNullOrEmpty(Model.PhoneNumber) ? "No especificado" : Model.PhoneNumber)
+                </span>
+            </div>
+
+            <div class="py-3.5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <span class="text-sm font-medium text-gray-500">Rol asignado</span>
+                <span class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100">
+                        🛡️ @Model.Role
+                    </span>
+                </span>
+            </div>
+
+            <div class="py-3.5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <span class="text-sm font-medium text-gray-500">Estado de cuenta</span>
+                <span class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+                    @if (Model.IsActive)
+                    {
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                            Activa
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                            Inactiva / Suspendida
+                        </span>
+                    }
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end space-x-3">
+        <form asp-action="Delete" class="w-full sm:w-auto flex items-center justify-end space-x-3">
+            <input type="hidden" asp-for="Id" />
+
+            <a asp-action="Index" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 text-center">
+                Cancelar, mantener usuario
+            </a>
+
+            <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm shadow-red-600/10 transition-all duration-200">
+                Eliminar Permanentemente
+            </button>
+        </form>
+    </div>
+</div>

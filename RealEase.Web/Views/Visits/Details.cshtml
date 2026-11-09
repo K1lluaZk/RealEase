@@ -1,0 +1,20 @@
+@using RealEase.Domain.Entities
+@model Visit
+
+@{
+    ViewData["Title"] = "Detalles de la visita";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Visitas · #@Model.Id</span><h1>Detalles de la visita</h1><p>Información del recorrido y las personas relacionadas.</p></div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a visitas</a>
+</div>
+<div class="detail-card card border-0">
+    <div class="detail-card-header"><span class="detail-icon"><i class="bi bi-calendar2-heart"></i></span><div><span class="eyebrow">Visita #@Model.Id</span><h2>@Model.VisitDate.ToLocalTime().ToString("f")</h2></div><span class="status-pill">@(Model.Status ?? "Sin estado")</span></div>
+    <div class="detail-grid">
+        <div><span>Propiedad</span><strong>#@Model.PropertyId</strong></div>
+        <div><span>Usuario</span><strong class="text-break">@Model.UserId</strong></div>
+        <div class="detail-grid-wide"><span>Notas</span><strong>@(Model.Notes ?? "Sin notas")</strong></div>
+    </div>
+    <div class="detail-actions"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-realease"><i class="bi bi-pencil-square"></i> Editar visita</a></div>
+</div>

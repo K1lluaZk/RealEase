@@ -1,0 +1,141 @@
+﻿@using RealEase.Domain.Entities
+@model Property
+
+@{
+    ViewData["Title"] = "Crear Propiedad";
+}
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Crear Propiedad</h1>
+        <p class="mt-2 text-sm text-gray-500">Completa los datos del formulario para registrar un nuevo alojamiento en el sistema.</p>
+    </div>
+
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
+        <form asp-action="Create" id="createPropertyForm" class="space-y-6">
+            <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+
+            <div>
+                <label asp-for="Title" class="block text-sm font-medium text-gray-700 mb-1">Título del Anuncio</label>
+                <input asp-for="Title" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="titleInput" placeholder="Ej. Hermoso apartamento con vista al mar" />
+                <span asp-validation-for="Title" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="ImageUrl" class="block text-sm font-medium text-gray-700 mb-1">Enlace de la Imagen (URL)</label>
+                <input asp-for="ImageUrl" type="url" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="imageUrlInput" placeholder="https://ejemplo.com/foto.jpg" />
+                <span asp-validation-for="ImageUrl" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                <textarea asp-for="Description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none resize-none" id="descriptionInput" placeholder="Describe detalladamente las características principales..."></textarea>
+                <span asp-validation-for="Description" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Address" class="block text-sm font-medium text-gray-700 mb-1">Dirección Exacta</label>
+                <input asp-for="Address" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="addressInput" placeholder="Ej. Av. Anacaona #42, Bella Vista" />
+                <span asp-validation-for="Address" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label asp-for="PropertyType" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Inmueble</label>
+                    <input asp-for="PropertyType" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="propertyTypeInput" placeholder="Apartamento, Casa..." />
+                    <span asp-validation-for="PropertyType" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Status" class="block text-sm font-medium text-gray-700 mb-1">Estado Inicial</label>
+                    <select asp-for="Status" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none bg-white" id="statusInput">
+                        <option value="Disponible">Disponible</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                        <option value="Ocupado">Ocupado</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="PricePerNight" class="block text-sm font-medium text-gray-700 mb-1">Precio por Noche (USD)</label>
+                    <div class="relative rounded-xl shadow-sm">
+                        <input asp-for="PricePerNight" type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="pricePerNightInput" placeholder="0.00" />
+                    </div>
+                    <span asp-validation-for="PricePerNight" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div>
+                    <label asp-for="Capacity" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Capacidad</label>
+                    <input asp-for="Capacity" type="number" min="1" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="capacityInput" value="1" />
+                    <span asp-validation-for="Capacity" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+                <div>
+                    <label asp-for="Bedrooms" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Habitaciones</label>
+                    <input asp-for="Bedrooms" type="number" min="0" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="bedroomsInput" value="1" />
+                    <span asp-validation-for="Bedrooms" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+                <div>
+                    <label asp-for="Bathrooms" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Baños</label>
+                    <input asp-for="Bathrooms" type="number" min="0" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="bathroomsInput" value="1" />
+                    <span asp-validation-for="Bathrooms" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="OwnerId" class="block text-sm font-medium text-gray-700 mb-1">ID del Propietario asignado</label>
+                <input asp-for="OwnerId" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="ownerIdInput" placeholder="UUID del usuario en Supabase Auth" />
+                <span asp-validation-for="OwnerId" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                <a asp-action="Index" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
+                    Cancelar
+                </a>
+                <button type="submit" id="addPropertyButton" class="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm shadow-emerald-600/10 transition-all duration-200">
+                    Guardar Propiedad
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#addPropertyButton').click(function (e) {
+                e.preventDefault();
+
+                var newProperty = {
+                    Title: $('#titleInput').val(),
+                    Images: $('#imageUrlInput').val() ? [$('#imageUrlInput').val()] : [],
+                    Description: $('#descriptionInput').val(),
+                    Address: $('#addressInput').val(),
+                    PricePerNight: parseFloat($('#pricePerNightInput').val()) || 0,
+                    MaxGuests: parseInt($('#capacityInput').val()) || 1,
+                    Bedrooms: parseInt($('#bedroomsInput').val()) || 1,
+                    Bathrooms: parseInt($('#bathroomsInput').val()) || 1,
+                    PropertyType: $('#propertyTypeInput').val(),
+                    Status: $('#statusInput').val(),
+                    OwnerId: $('#ownerIdInput').val() || null
+                };
+
+                $.ajax({
+                    url: window.realEaseApiBaseUrl + 'api/Properties',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newProperty),
+                    success: function (data) {
+                        alert('¡Propiedad creada exitosamente!');
+                        window.location.href = '@Url.Action("Index")';
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                        alert('Hubo un error al procesar el registro.');
+                    }
+                });
+            });
+        });
+    </script>
+}

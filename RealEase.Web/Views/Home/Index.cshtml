@@ -1,0 +1,72 @@
+@model List<RealEase.Application.Dtos.Property.PropertyDto>
+
+@{
+    ViewData["Title"] = "Inicio";
+    var featured = Model.Take(3).ToList();
+}
+
+<section class="rounded-4 p-4 p-md-5 mb-5 text-white" style="background:linear-gradient(120deg,#102b32,#1a665a)">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <span class="badge rounded-pill text-bg-light mb-3">RealEase · República Dominicana</span>
+            <h1 class="display-5 fw-bold">Encuentra un espacio para sentirte en casa.</h1>
+            <p class="lead mb-4">Explora propiedades, consulta disponibilidad y gestiona tu alquiler en un solo lugar.</p>
+            <a asp-controller="Properties" asp-action="Index" class="btn btn-light btn-lg">Explorar propiedades</a>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <div class="display-3 fw-bold">@Model.Count</div>
+            <div class="opacity-75">propiedades disponibles en el catálogo</div>
+        </div>
+    </div>
+</section>
+
+@if (ViewData["ApiError"] is string apiError)
+{
+    <div class="alert alert-warning" role="alert">@apiError</div>
+}
+
+<div class="d-flex align-items-end justify-content-between mb-3">
+    <div>
+        <h2 class="h3 mb-1">Propiedades destacadas</h2>
+        <p class="text-secondary mb-0">Selección actual del catálogo de RealEase.</p>
+    </div>
+    <a asp-controller="Properties" asp-action="Index" class="btn btn-outline-secondary">Ver todas</a>
+</div>
+
+@if (featured.Count == 0)
+{
+    <div class="card border-0 shadow-sm"><div class="card-body py-5 text-center text-secondary">No hay propiedades para mostrar todavía.</div></div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var property in featured)
+        {
+            var image = property.Images?.FirstOrDefault();
+            <div class="col-md-6 col-xl-4">
+                <article class="card h-100 border-0 shadow-sm overflow-hidden">
+                    @if (!string.IsNullOrWhiteSpace(image))
+                    {
+                        <img src="@image" class="card-img-top" alt="@property.Title" style="height:220px;object-fit:cover" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center text-secondary" style="height:220px">Sin fotografía</div>
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between gap-2 mb-2">
+                            <span class="badge text-bg-light">@property.PropertyType</span>
+                            <span class="badge text-bg-success">@property.Status</span>
+                        </div>
+                        <h3 class="h5">@property.Title</h3>
+                        <p class="text-secondary small mb-3">@property.Address</p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <strong>@property.PricePerNight.ToString("C") <span class="text-secondary fw-normal small">/ noche</span></strong>
+                            <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-outline-success">Ver detalles</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

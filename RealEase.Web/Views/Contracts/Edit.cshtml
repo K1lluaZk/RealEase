@@ -1,0 +1,116 @@
+﻿@using RealEase.Domain.Entities
+@model Contract
+
+@{
+    ViewData["Title"] = "Editar Contrato";
+}
+
+<h1 class="text-center text-info">Editar Contrato</h1>
+
+<div class="container mt-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <h4 class="card-title text-secondary">Detalles del Contrato</h4>
+            <form asp-action="Edit" id="editContractForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">ID Cliente</label>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="clientIdInput" name="ClientId" value="@Model.ClientId" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">ID Agente</label>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="agentIdInput" name="AgentId" value="@Model.AgentId" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">ID Propiedad</label>
+                    <div class="col-md-6">
+                        <input type="number" min="1" step="1" class="form-control" id="propertyIdInput" name="PropertyId" value="@Model.PropertyId" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Fecha de Inicio</label>
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="startDateInput" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Fecha de Finalización</label>
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="endDateInput" name="EndDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Monto Total</label>
+                    <div class="col-md-6">
+                        <input type="number" min="0" step="0.01" class="form-control" id="monthlyAmountInput" name="TotalAmount" value="@Model.TotalAmount" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Estado</label>
+                    <div class="col-md-6">
+                        <input class="form-control" id="statusInput" name="Status" value="@Model.Status" placeholder="Ej. Disponible" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-between">
+        <button type="button" id="UpdateContractButton" class="btn btn-primary">Guardar</button>
+        <a href="/Contracts" class="btn btn-secondary">Cancelar</a>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#UpdateContractButton').click(function (e) {
+                e.preventDefault();
+                var contractId = $('input[name="Id"]').val();
+
+                console.log('Contract ID:', contractId);
+
+                var updatedContract = {
+                    Id: contractId,
+                    ClientId: $('#clientIdInput').val(),
+                    AgentId: $('#agentIdInput').val() || null,
+                    PropertyId: Number($('#propertyIdInput').val()),
+                    StartDate: $('#startDateInput').val(),
+                    EndDate: $('#endDateInput').val(),
+                    TotalAmount: Number($('#monthlyAmountInput').val()),
+                    Status: $('#statusInput').val()
+                };
+
+                $.ajax({
+                    url: window.realEaseApiBaseUrl + 'api/Contracts',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updatedContract),
+                    success: function () {
+                        alert('Contract updated successfully');
+                        window.location.href = '/Contracts';
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                        alert('An error occurred while updating the contract.');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,97 @@
+﻿@using RealEase.Domain.Entities
+@model Visit
+
+@{
+    ViewData["Title"] = "Crear Visita";
+}
+
+<h1 class="text-center text-info">Crear Visita</h1>
+
+<div class="container mt-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <h4 class="card-title text-secondary">Información de la Visita</h4>
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">ID Propiedad</label>
+                    <div class="col-md-6">
+                        <input type="number" step="1" class="form-control" id="propertyIdInput" name="PropertyId" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">ID Usuario</label>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="userIdInput" name="UserId" placeholder="UUID del usuario" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Fecha de Visita</label>
+                    <div class="col-md-6">
+                        <input type="datetime-local" class="form-control" id="visitDateInput" name="VisitDate" required />
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    <label class="col-md-3 col-form-label">Estado</label>
+                    <div class="col-md-6">
+                        <input class="form-control" id="statusInput" name="Status" list="status" placeholder="Ej. Disponible" />
+                        <datalist id="status">
+                            <option value="Pendiente" />
+                            <option value="Disponible" />
+                            <option value="Vendido" />
+                        </datalist>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Notas</label>
+                    <div class="col-md-6">
+                        <input class="form-control" id="notesInput" name="Notes" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-between">
+        <button id="addVisitButton" class="btn btn-primary">Guardar</button>
+        <a href="/Visits" class="btn btn-secondary">Cancelar</a>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#addVisitButton').click(function (e) {
+                e.preventDefault();
+                var newVisit = {
+                    PropertyId: $('#propertyIdInput').val(),
+                    UserId: $('#userIdInput').val(),
+                    VisitDate: new Date($('#visitDateInput').val()).toISOString(),
+                    Status: $('#statusInput').val(),
+                    Notes: $('#notesInput').val()
+
+                };
+                $.ajax({
+                    url: window.realEaseApiBaseUrl + 'api/Visits',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newVisit),
+                    success: function (data) {
+                        window.location.href = '/Visits';
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+
+}

@@ -1,0 +1,122 @@
+﻿@using RealEase.Domain.Entities
+@model User
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Editar Usuario</h1>
+        <p class="mt-2 text-sm text-gray-500">Modifica los datos de perfil del usuario seleccionado.</p>
+    </div>
+
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
+        <form asp-action="Edit" id="editUserForm" class="space-y-6">
+            <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label asp-for="FirstName" class="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
+                    <input asp-for="FirstName" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="firstNameInput" required />
+                    <span asp-validation-for="FirstName" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="LastName" class="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
+                    <input asp-for="LastName" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="lastNameInput" required />
+                    <span asp-validation-for="LastName" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                <input asp-for="Email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="emailInput" required />
+                <span asp-validation-for="Email" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label asp-for="PhoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                    <input asp-for="PhoneNumber" type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="phoneNumberInput" required />
+                    <span asp-validation-for="PhoneNumber" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+            </div>
+
+            <div>
+                <label asp-for="Role" class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
+                <input asp-for="Role" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="roleInput" list="roles" placeholder="Ej. Administrador" required />
+                <datalist id="roles">
+                    <option value="Administrador" />
+                    <option value="Agente de ventas" />
+                    <option value="Dueño" />
+                    <option value="Cliente" />
+                </datalist>
+                <span asp-validation-for="Role" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div class="flex items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div class="flex items-center h-5">
+                    <input asp-for="IsActive" type="checkbox" class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 transition-colors cursor-pointer" id="isActiveInput" />
+                </div>
+                <div class="ml-3 text-sm">
+                    <label asp-for="IsActive" class="font-medium text-gray-700 cursor-pointer">Cuenta activa y habilitada</label>
+                    <p class="text-xs text-gray-500">Determina si el usuario mantiene permisos vigentes para operar dentro del ecosistema.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                <a href="/Users" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
+                    Cancelar
+                </a>
+                <button type="button" id="UpdateUserButton" class="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm shadow-emerald-600/10 transition-all duration-200">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#UpdateUserButton').click(function (e) {
+                e.preventDefault();
+
+                // Extracción segura usando el Id generado nativamente por Razor
+                var userId = $('#@Html.IdFor(m => m.Id)').val();
+
+                console.log('Procesando cambios para el User ID:', userId);
+
+                var updatedUser = {
+                    Id: userId,
+                    FirstName: $('#firstNameInput').val(),
+                    LastName: $('#lastNameInput').val(),
+                    Email: $('#emailInput').val(),
+                    PhoneNumber: $('#phoneNumberInput').val(),
+                    Role: $('#roleInput').val(),
+                    IsActive: $('#isActiveInput').is(':checked')
+                };
+
+                $.ajax({
+                    url: 'https://localhost:7012/api/Users',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updatedUser),
+                    success: function () {
+                        alert('¡Los datos del usuario se actualizaron correctamente!');
+                        window.location.href = '/Users';
+                    },
+                    error: function (error) {
+                        console.log('Error detectado en la actualización:', error);
+                        alert('No se pudieron salvar los cambios. Revisa la consola para más detalles.');
+                    }
+                });
+            });
+        });
+    </script>
+}

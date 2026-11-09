@@ -1,0 +1,144 @@
+﻿@using RealEase.Domain.Entities
+@model Property
+
+@{
+    ViewData["Title"] = "Editar Propiedad";
+}
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Editar Propiedad</h1>
+        <p class="mt-2 text-sm text-gray-500">Modifica los campos necesarios para actualizar el estado del inmueble.</p>
+    </div>
+
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
+        <form asp-action="Edit" id="editPropertyForm" class="space-y-6">
+            <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+
+            <input type="hidden" asp-for="Id" id="propertyIdHidden" />
+
+            <div>
+                <label asp-for="Title" class="block text-sm font-medium text-gray-700 mb-1">Título del Anuncio</label>
+                <input asp-for="Title" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="titleInput" value="@Model.Title" placeholder="Ej. Casa en venta" />
+                <span asp-validation-for="Title" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="ImageUrl" class="block text-sm font-medium text-gray-700 mb-1">Enlace de la Imagen (URL)</label>
+                <input asp-for="ImageUrl" type="url" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="imageUrlInput" value="@Model.ImageUrl" placeholder="https://..." />
+                <span asp-validation-for="ImageUrl" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                <textarea asp-for="Description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none resize-none" id="descriptionInput" placeholder="Breve descripción...">@Model.Description</textarea>
+                <span asp-validation-for="Description" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Address" class="block text-sm font-medium text-gray-700 mb-1">Dirección Exacta</label>
+                <input asp-for="Address" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="addressInput" value="@Model.Address" placeholder="Ej. Calle Principal #123" />
+                <span asp-validation-for="Address" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label asp-for="PropertyType" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Inmueble</label>
+                    <input asp-for="PropertyType" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="propertyTypeInput" value="@Model.PropertyType" placeholder="Ej. Apartamento..." />
+                    <span asp-validation-for="PropertyType" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Status" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <select asp-for="Status" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none bg-white" id="statusInput">
+                        <option value="Disponible" selected="@(Model.Status == "Disponible")">Disponible</option>
+                        <option value="Mantenimiento" selected="@(Model.Status == "Mantenimiento")">Mantenimiento</option>
+                        <option value="Ocupado" selected="@(Model.Status == "Ocupado")">Ocupado</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="PricePerNight" class="block text-sm font-medium text-gray-700 mb-1">Precio por Noche (USD)</label>
+                    <input asp-for="PricePerNight" type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="pricePerNightInput" value="@Model.PricePerNight" placeholder="0.00" />
+                    <span asp-validation-for="PricePerNight" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div>
+                    <label asp-for="Capacity" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Capacidad</label>
+                    <input asp-for="Capacity" type="number" min="1" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="capacityInput" value="@Model.Capacity" />
+                </div>
+                <div>
+                    <label asp-for="Bedrooms" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Habitaciones</label>
+                    <input asp-for="Bedrooms" type="number" min="0" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="bedroomsInput" value="@Model.Bedrooms" />
+                </div>
+                <div>
+                    <label asp-for="Bathrooms" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Baños</label>
+                    <input asp-for="Bathrooms" type="number" min="0" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="bathroomsInput" value="@Model.Bathrooms" />
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="OwnerId" class="block text-sm font-medium text-gray-700 mb-1">ID del Dueño</label>
+                <input asp-for="OwnerId" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="ownerIdInput" value="@Model.OwnerId" placeholder="UUID del usuario en Supabase Auth" />
+                <span asp-validation-for="OwnerId" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                <a href="/Properties" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
+                    Cancelar
+                </a>
+                <button type="button" id="UpdatePropertyButton" class="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm shadow-emerald-600/10 transition-all duration-200">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#UpdatePropertyButton').click(function (e) {
+                e.preventDefault();
+
+                var propertyId = $('#propertyIdHidden').val();
+                console.log('Actualizando Property con ID:', propertyId);
+
+                // Mapeo exacto de los campos limpios de la base de datos
+                var updatedProperty = {
+                    Id: Number(propertyId),
+                    Title: $('#titleInput').val(),
+                    Images: $('#imageUrlInput').val() ? [$('#imageUrlInput').val()] : [],
+                    Description: $('#descriptionInput').val(),
+                    Address: $('#addressInput').val(),
+                    PricePerNight: parseFloat($('#pricePerNightInput').val()) || 0,
+                    MaxGuests: parseInt($('#capacityInput').val()) || 1,
+                    Bedrooms: parseInt($('#bedroomsInput').val()) || 1,
+                    Bathrooms: parseInt($('#bathroomsInput').val()) || 1,
+                    PropertyType: $('#propertyTypeInput').val(),
+                    Status: $('#statusInput').val(),
+                    OwnerId: $('#ownerIdInput').val() || null
+                };
+
+                $.ajax({
+                    url: window.realEaseApiBaseUrl + 'api/Properties',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updatedProperty),
+                    success: function () {
+                        alert('¡Propiedad actualizada de manera correcta!');
+                        window.location.href = '/Properties';
+                    },
+                    error: function (error) {
+                        console.log('Error detectado:', error);
+                        alert('Ocurrió un inconveniente al intentar actualizar el registro.');
+                    }
+                });
+            });
+        });
+    </script>
+}

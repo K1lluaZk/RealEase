@@ -1,0 +1,184 @@
+﻿@using RealEase.Web.ViewsModels
+   @model UsersViewModel
+
+@{
+    ViewData["Title"] = "User List";
+
+
+}
+
+<style>
+    body {
+        background-color: #f5f5dc; /* beige */
+    }
+
+    .btn-green {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+        .btn-green:hover {
+            background-color: #45a049;
+        }
+
+    .table-custom th {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .text-green {
+        color: #4CAF50;
+    }
+</style>
+
+
+<div class="mb-4 mt-4">
+    <input type="text" id="filterName" placeholder="Nombre" class="form-control mb-2" />
+    <input type="text" id="filterRole" placeholder="Rol" class="form-control mb-2" />
+    <select id="filterIsActive" class="form-control mb-2">
+        <option value="">Todos</option>
+        <option value="true">Activos</option>
+        <option value="false">Inactivos</option>
+    </select>
+    <button id="btnFilter" class="btn btn-primary">Filtrar</button>
+</div>
+
+
+<h2 class="text-green mb-4">Usuarios Registrados</h2>
+
+<a class="btn btn-green mb-3" id="addUserButton">➕ Agregar Usuario</a>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body bg-white rounded-3">
+        <h4 class="text-secondary">Listado completo</h4>
+        <table class="table table-hover text-center table-bordered table-custom">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="UsersTableBody">
+                <tr>
+                    <td colspan="9">No se encontraron registros</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            loadUsers();
+
+
+            $('#addUserButton').click(function () {
+                window.location.href = 'https://localhost:7146/Users/Create';
+            });
+
+
+            $(document).on('click', '.delete-User', function () {
+                var userId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this User?')) {
+                    $.ajax({
+                        url: 'https://localhost:7012/api/Users/' + userId,
+                        type: 'DELETE',
+                        success: function () {
+                            alert('User deleted successfully');
+                            loadUsers();
+                        },
+                        error: function (error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                }
+            });
+
+
+            $(document).on('click', '.edit-User', function () {
+                var userId = $(this).data('id');
+                window.location.href = 'https://localhost:7146/Users/Edit/' + userId;
+            });
+
+
+            $(document).on('click', '.view-User', function () {
+                var userId = $(this).data('id');
+                window.location.href = 'https://localhost:7146/Users/Details/' + userId;
+            });
+
+
+            $('#btnFilter').click(function () {
+                var name = $('#filterName').val();
+                var role = $('#filterRole').val();
+                var isActive = $('#filterIsActive').val();
+
+                $.ajax({
+                    url: 'https://localhost:7012/api/Users/filter',
+                    type: 'GET',
+                    data: {
+                        name: name,
+                        role: role,
+                        isActive: isActive
+                    },
+                    success: function (data) {
+                        renderUserTable(data);
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+
+
+        function loadUsers() {
+            $.ajax({
+                url: 'https://localhost:7012/api/Users',
+                type: 'GET',
+                success: function (data) {
+                    renderUserTable(data);
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        function renderUserTable(data) {
+            var tableBody = '';
+
+            if (data.length === 0) {
+                tableBody = '<tr><td colspan="8">No Records found</td></tr>';
+            } else {
+                $.each(data, function (index, user) {
+                    tableBody += '<tr>' +
+                        '<td>' + user.id + '</td>' +
+                        '<td>' + user.firstName + '</td>' +
+                        '<td>' + user.lastName + '</td>' +
+                        '<td>' + user.email + '</td>' +
+                        '<td>' + user.phoneNumber + '</td>' +
+                        '<td>' + user.role + '</td>' +
+                        '<td>' + (user.isActive ? 'Activo' : 'No activo') + '</td>' +
+                        '<td>' +
+                        '<a class="btn btn-warning edit-User" data-id="' + user.id + '">Editar</a> ' +
+                        '<a class="btn btn-info view-User" data-id="' + user.id + '">Detalles</a> ' +
+                        '<button class="btn btn-danger delete-User" data-id="' + user.id + '">Eliminar</button>' +
+                        '</td>' +
+                        '</tr>';
+                });
+            }
+
+            $('#UsersTableBody').html(tableBody);
+        }
+    </script>
+}
