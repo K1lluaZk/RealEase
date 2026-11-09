@@ -398,3 +398,33 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+## Ignorar binarios de build
+bin/
+obj/
+
+## Ignorar archivos de usuario de Visual Studio
+*.user
+*.suo
+.vs/
+*.rsuser
+*.DotSettings.user
+
+## Ignorar configuracion local sensible (credenciales)
+# ¡IMPORTANTE! El archivo appsettings.Development.json contiene credenciales de Supabase.
+# Para produccion, usa variables de entorno o Azure Key Vault.
+appsettings.Development.json
+
+## Ignorar secrets.json de User Secrets (si se configuran)
+secrets.json
+
+## Ignorar archivos de log
+*.log
+Logs/
+
+## Ignorar archivos temporales del OS
+.DS_Store
+Thumbs.db
+
+## Ignorar paquetes NuGet restaurados localmente
+packages/
+*.nupkg
