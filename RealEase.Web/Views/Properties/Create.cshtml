@@ -13,6 +13,7 @@
 
     <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
         <form asp-action="Create" id="createPropertyForm" class="space-y-6">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
 
             <div>
@@ -39,11 +40,25 @@
                 <span asp-validation-for="Address" class="text-xs text-red-500 mt-1 block"></span>
             </div>
 
+            <div>
+                <label asp-for="City" class="block text-sm font-medium text-gray-700 mb-1">Ciudad o zona</label>
+                <input asp-for="City" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm" id="cityInput" placeholder="Ej. Santo Domingo" />
+                <span asp-validation-for="City" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label asp-for="PropertyType" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Inmueble</label>
                     <input asp-for="PropertyType" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="propertyTypeInput" placeholder="Apartamento, Casa..." />
                     <span asp-validation-for="PropertyType" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ListingType" class="block text-sm font-medium text-gray-700 mb-1">Operación</label>
+                    <select asp-for="ListingType" class="form-select" id="listingTypeInput">
+                        <option value="rent">Alquiler</option>
+                        <option value="sale">Venta</option>
+                    </select>
                 </div>
 
                 <div>
@@ -56,12 +71,16 @@
                     <span asp-validation-for="Status" class="text-xs text-red-500 mt-1 block"></span>
                 </div>
 
-                <div>
+                <div id="nightlyPriceField">
                     <label asp-for="PricePerNight" class="block text-sm font-medium text-gray-700 mb-1">Precio por Noche (USD)</label>
                     <div class="relative rounded-xl shadow-sm">
                         <input asp-for="PricePerNight" type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="pricePerNightInput" placeholder="0.00" />
                     </div>
                     <span asp-validation-for="PricePerNight" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+                <div id="salePriceField" class="d-none">
+                    <label asp-for="SalePrice" class="block text-sm font-medium text-gray-700 mb-1">Precio de Venta (USD)</label>
+                    <input asp-for="SalePrice" type="number" min="0" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-xl" id="salePriceInput" placeholder="0.00" />
                 </div>
             </div>
 
@@ -112,7 +131,10 @@
                     Images: $('#imageUrlInput').val() ? [$('#imageUrlInput').val()] : [],
                     Description: $('#descriptionInput').val(),
                     Address: $('#addressInput').val(),
-                    PricePerNight: parseFloat($('#pricePerNightInput').val()) || 0,
+                    City: $('#cityInput').val(),
+                    ListingType: $('#listingTypeInput').val(),
+                    PricePerNight: $('#listingTypeInput').val() === 'rent' ? (parseFloat($('#pricePerNightInput').val()) || 0) : 0,
+                    SalePrice: $('#listingTypeInput').val() === 'sale' && $('#salePriceInput').val() !== '' ? parseFloat($('#salePriceInput').val()) : null,
                     MaxGuests: parseInt($('#capacityInput').val()) || 1,
                     Bedrooms: parseInt($('#bedroomsInput').val()) || 1,
                     Bathrooms: parseInt($('#bathroomsInput').val()) || 1,
@@ -122,8 +144,9 @@
                 };
 
                 $.ajax({
-                    url: window.realEaseApiBaseUrl + 'api/Properties',
+                    url: '@Url.Action("CreateFromApi", "Properties")',
                     type: 'POST',
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                     contentType: 'application/json',
                     data: JSON.stringify(newProperty),
                     success: function (data) {
@@ -137,5 +160,10 @@
                 });
             });
         });
+        $('#listingTypeInput').on('change', function () {
+            const isSale = this.value === 'sale';
+            $('#nightlyPriceField').toggleClass('d-none', isSale);
+            $('#salePriceField').toggleClass('d-none', !isSale);
+        }).trigger('change');
     </script>
 }

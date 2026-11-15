@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using RealEase.Domain.Models;
 using RealEase.Web.Services;
 using RealEase.Application.Dtos.Property;
 
 namespace RealEase.Web.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin)]
     public class PropertiesController : Controller
     {
         private readonly RealEaseApiClient _api;
@@ -29,6 +32,7 @@ namespace RealEase.Web.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFromApi(long id, CancellationToken cancellationToken)
@@ -47,18 +51,55 @@ namespace RealEase.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateFromApi([FromBody] PropertyDto dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _api.PostAsync<PropertyDto, long>("api/Properties", dto, cancellationToken);
+                return Ok();
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogWarning(exception, "No se pudo crear la propiedad mediante la API.");
+                return StatusCode((int)(exception.StatusCode ?? System.Net.HttpStatusCode.BadGateway));
+            }
+        }
+
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateFromApi([FromBody] PropertyDto dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _api.PutAsync("api/Properties", dto, cancellationToken);
+                return NoContent();
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogWarning(exception, "No se pudo actualizar la propiedad {PropertyId} mediante la API.", dto.Id);
+                return StatusCode((int)(exception.StatusCode ?? System.Net.HttpStatusCode.BadGateway));
+            }
+        }
+
+        [AllowAnonymous]
         public async Task<IActionResult> Details(long id, CancellationToken cancellationToken)
         {
             var dto = await _api.GetPropertyAsync(id, cancellationToken);
             return dto == null ? NotFound() : View(ToEntity(dto));
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Edit(long id, CancellationToken cancellationToken)
         {
@@ -66,6 +107,7 @@ namespace RealEase.Web.Controllers
             return dto == null ? NotFound() : View(ToEntity(dto));
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {
@@ -76,11 +118,11 @@ namespace RealEase.Web.Controllers
         private static RealEase.Domain.Entities.Property ToEntity(PropertyDto dto) => new()
         {
             Id = dto.Id, Title = dto.Title, Description = dto.Description,
-            Address = dto.Address, PricePerNight = dto.PricePerNight,
+            Address = dto.Address, City = dto.City, ListingType = dto.ListingType,
+            PricePerNight = dto.PricePerNight, SalePrice = dto.SalePrice,
             PropertyType = dto.PropertyType, Status = dto.Status, OwnerId = dto.OwnerId,
             Images = dto.Images, Bedrooms = dto.Bedrooms, Bathrooms = dto.Bathrooms,
             MaxGuests = dto.MaxGuests, CreatedAt = dto.CreatedAt, UpdatedAt = dto.UpdatedAt
         };
     }
 }
-

@@ -1,72 +1,293 @@
 @model List<RealEase.Application.Dtos.Property.PropertyDto>
 
 @{
-    ViewData["Title"] = "Inicio";
-    var featured = Model.Take(3).ToList();
+    ViewData["Title"] = "Encuentra tu próximo hogar";
+    var homesForRent = Model.Where(property => string.Equals(property.ListingType, "rent", StringComparison.OrdinalIgnoreCase)).Take(3).ToList();
+    var homesForSale = Model.Where(property => string.Equals(property.ListingType, "sale", StringComparison.OrdinalIgnoreCase)).Take(3).ToList();
 }
 
-<section class="rounded-4 p-4 p-md-5 mb-5 text-white" style="background:linear-gradient(120deg,#102b32,#1a665a)">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-8">
-            <span class="badge rounded-pill text-bg-light mb-3">RealEase · República Dominicana</span>
-            <h1 class="display-5 fw-bold">Encuentra un espacio para sentirte en casa.</h1>
-            <p class="lead mb-4">Explora propiedades, consulta disponibilidad y gestiona tu alquiler en un solo lugar.</p>
-            <a asp-controller="Properties" asp-action="Index" class="btn btn-light btn-lg">Explorar propiedades</a>
-        </div>
-        <div class="col-lg-4 text-lg-end">
-            <div class="display-3 fw-bold">@Model.Count</div>
-            <div class="opacity-75">propiedades disponibles en el catálogo</div>
+<!-- Hero Section inspired by Redfin in Emerald Green -->
+<section class="hero-redfin mb-5">
+    <div class="hero-redfin-backdrop">
+        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=80" 
+             alt="Hogar moderno RealEase" 
+             class="hero-bg-img" />
+        <div class="hero-redfin-overlay"></div>
+    </div>
+
+    <div class="container-xl position-relative py-5">
+        <div class="row align-items-center g-5 py-lg-4">
+            <div class="col-lg-7 text-white">
+                <span class="badge bg-success px-3 py-2 rounded-pill fw-bold text-uppercase letter-spacing mb-3">
+                    <i class="bi bi-geo-alt-fill me-1"></i> Red Inmobiliaria Líder
+                </span>
+                <h1 class="display-4 fw-extrabold hero-headline mb-3 text-white">
+                    Tu próximo hogar <br />
+                    <span class="text-success-light">empieza aquí.</span>
+                </h1>
+                <p class="lead text-white-50 mb-4 pe-lg-4">
+                    Explora miles de opciones verificadas en venta y alquiler con el acompañamiento de asesores locales certificados.
+                </p>
+
+                <!-- Search Box with Tabs (Redfin Style) -->
+                <div class="card border-0 shadow-lg rounded-4 p-3 search-card-hero bg-white text-dark">
+                    <!-- Tabs -->
+                    <ul class="nav nav-pills search-hero-tabs mb-3 gap-2" id="searchTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill fw-bold px-3 py-1.5" id="rent-tab" data-bs-toggle="pill" data-bs-target="#rent-search" type="button" role="tab">
+                                <i class="bi bi-key-fill me-1"></i> Alquilar
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill fw-bold px-3 py-1.5" id="buy-tab" data-bs-toggle="pill" data-bs-target="#buy-search" type="button" role="tab">
+                                <i class="bi bi-house-fill me-1"></i> Comprar
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a asp-controller="Home" asp-action="Sell" class="nav-link rounded-pill fw-bold px-3 py-1.5 text-secondary">
+                                <i class="bi bi-tag-fill me-1"></i> Vender
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Contents -->
+                    <div class="tab-content" id="searchTabsContent">
+                        <!-- Rent Tab -->
+                        <div class="tab-pane fade show active" id="rent-search" role="tabpanel">
+                            <form asp-controller="Home" asp-action="Rent" method="get" class="d-flex flex-column flex-sm-row gap-2">
+                                <div class="input-group input-group-lg search-input-group">
+                                    <span class="input-group-text bg-transparent border-0 text-success ps-3">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input name="query" class="form-control border-0 ps-2" placeholder="Ciudad, zona o dirección (ej. Santo Domingo, Piantini...)" aria-label="Buscar alquileres" />
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm flex-shrink-0">
+                                    Buscar alquileres
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Buy Tab -->
+                        <div class="tab-pane fade" id="buy-search" role="tabpanel">
+                            <form asp-controller="Home" asp-action="Buy" method="get" class="d-flex flex-column flex-sm-row gap-2">
+                                <div class="input-group input-group-lg search-input-group">
+                                    <span class="input-group-text bg-transparent border-0 text-primary ps-3">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input name="query" class="form-control border-0 ps-2" placeholder="Ciudad, zona o dirección en venta..." aria-label="Buscar casas en venta" />
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm flex-shrink-0">
+                                    Buscar compras
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Quick location tags -->
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-2 border-top text-secondary small">
+                        <span class="fw-semibold text-dark"><i class="bi bi-fire text-success me-1"></i>Tendencias:</span>
+                        <a asp-controller="Home" asp-action="Rent" asp-route-query="Santo Domingo" class="badge rounded-pill bg-light text-dark text-decoration-none border px-2.5 py-1.5 hover-success">Santo Domingo</a>
+                        <a asp-controller="Home" asp-action="Rent" asp-route-query="Santiago" class="badge rounded-pill bg-light text-dark text-decoration-none border px-2.5 py-1.5 hover-success">Santiago</a>
+                        <a asp-controller="Home" asp-action="Rent" asp-route-query="Punta Cana" class="badge rounded-pill bg-light text-dark text-decoration-none border px-2.5 py-1.5 hover-success">Punta Cana</a>
+                        <a asp-controller="Home" asp-action="Rent" asp-route-query="Las Terrenas" class="badge rounded-pill bg-light text-dark text-decoration-none border px-2.5 py-1.5 hover-success">Las Terrenas</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Hero Showcase Card -->
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-feature-card position-relative p-2 rounded-4 bg-white shadow-xl">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" 
+                         alt="Villa Moderna" 
+                         class="w-100 rounded-3 object-fit-cover" 
+                         style="height: 340px;" />
+                    <div class="hero-feature-pill position-absolute top-0 start-0 m-4 px-3 py-1.5 rounded-pill bg-success text-white fw-bold shadow-sm small">
+                        <i class="bi bi-star-fill me-1 text-warning"></i> Destacado RealEase
+                    </div>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge bg-success-subtle text-success rounded-pill fw-bold px-2.5 py-1">En Alquiler</span>
+                            <span class="text-success fw-extrabold fs-5">$1,850 <small class="text-secondary fs-6 fw-normal">/ noche</small></span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Villa Paraíso &amp; Private Pool</h6>
+                        <p class="text-secondary small mb-0"><i class="bi bi-geo-alt text-success me-1"></i>Punta Cana, La Altagracia</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-@if (ViewData["ApiError"] is string apiError)
-{
-    <div class="alert alert-warning" role="alert">@apiError</div>
-}
+<div class="container-xl">
+    @if (ViewData["ApiError"] is string apiError)
+    {
+        <div class="alert alert-warning rounded-4 shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @apiError
+        </div>
+    }
 
-<div class="d-flex align-items-end justify-content-between mb-3">
-    <div>
-        <h2 class="h3 mb-1">Propiedades destacadas</h2>
-        <p class="text-secondary mb-0">Selección actual del catálogo de RealEase.</p>
-    </div>
-    <a asp-controller="Properties" asp-action="Index" class="btn btn-outline-secondary">Ver todas</a>
-</div>
-
-@if (featured.Count == 0)
-{
-    <div class="card border-0 shadow-sm"><div class="card-body py-5 text-center text-secondary">No hay propiedades para mostrar todavía.</div></div>
-}
-else
-{
-    <div class="row g-4">
-        @foreach (var property in featured)
-        {
-            var image = property.Images?.FirstOrDefault();
-            <div class="col-md-6 col-xl-4">
-                <article class="card h-100 border-0 shadow-sm overflow-hidden">
-                    @if (!string.IsNullOrWhiteSpace(image))
-                    {
-                        <img src="@image" class="card-img-top" alt="@property.Title" style="height:220px;object-fit:cover" />
-                    }
-                    else
-                    {
-                        <div class="bg-light d-flex align-items-center justify-content-center text-secondary" style="height:220px">Sin fotografía</div>
-                    }
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between gap-2 mb-2">
-                            <span class="badge text-bg-light">@property.PropertyType</span>
-                            <span class="badge text-bg-success">@property.Status</span>
-                        </div>
-                        <h3 class="h5">@property.Title</h3>
-                        <p class="text-secondary small mb-3">@property.Address</p>
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <strong>@property.PricePerNight.ToString("C") <span class="text-secondary fw-normal small">/ noche</span></strong>
-                            <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-outline-success">Ver detalles</a>
-                        </div>
+    <!-- Category Highlights with beautiful imagery -->
+    <section class="mb-5">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <a asp-controller="Home" asp-action="Rent" class="category-card position-relative d-block rounded-4 overflow-hidden shadow-sm text-decoration-none">
+                    <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80" alt="Apartamentos" class="category-img w-100 object-fit-cover" />
+                    <div class="category-overlay p-3 d-flex flex-column justify-content-end">
+                        <h6 class="fw-bold text-white mb-0">Apartamentos</h6>
+                        <small class="text-white-50">Modernos y céntricos</small>
                     </div>
-                </article>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Home" asp-action="Rent" class="category-card position-relative d-block rounded-4 overflow-hidden shadow-sm text-decoration-none">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80" alt="Casas" class="category-img w-100 object-fit-cover" />
+                    <div class="category-overlay p-3 d-flex flex-column justify-content-end">
+                        <h6 class="fw-bold text-white mb-0">Casas Familiares</h6>
+                        <small class="text-white-50">Espacio y confort</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Home" asp-action="Rent" class="category-card position-relative d-block rounded-4 overflow-hidden shadow-sm text-decoration-none">
+                    <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=500&q=80" alt="Villas" class="category-img w-100 object-fit-cover" />
+                    <div class="category-overlay p-3 d-flex flex-column justify-content-end">
+                        <h6 class="fw-bold text-white mb-0">Villas de Lujo</h6>
+                        <small class="text-white-50">Con piscina y jardín</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Home" asp-action="Rent" class="category-card position-relative d-block rounded-4 overflow-hidden shadow-sm text-decoration-none">
+                    <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=500&q=80" alt="Vacacionales" class="category-img w-100 object-fit-cover" />
+                    <div class="category-overlay p-3 d-flex flex-column justify-content-end">
+                        <h6 class="fw-bold text-white mb-0">Vacacionales</h6>
+                        <small class="text-white-50">Frente al mar y relax</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- RENTALS SECTION (Primary focus requested by user) -->
+    <section class="section-rentals mb-5 py-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+            <div>
+                <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-key-fill me-1"></i> Favoritos de Alquiler
+                </span>
+                <h2 class="display-6 fw-extrabold text-dark mb-1">Hogares en alquiler disponibles</h2>
+                <p class="text-secondary mb-0">Espacios listos para habitar, completamente equipados y respaldados por nuestro equipo.</p>
+            </div>
+            <a asp-controller="Home" asp-action="Rent" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                Ver todos los alquileres <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        @if (homesForRent.Count > 0)
+        {
+            <partial name="_ListingCards" model="homesForRent" />
+        }
+        else
+        {
+            <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-4">
+                <i class="bi bi-key text-success display-4 mb-3 d-block"></i>
+                <h4 class="fw-bold text-dark">No hay alquileres en este momento</h4>
+                <p class="text-secondary max-w-md mx-auto">Estamos actualizando nuestro catálogo con nuevas propiedades. Explora nuestras casas en venta o contáctanos.</p>
+                <a asp-controller="Home" asp-action="Rent" class="btn btn-outline-success rounded-pill px-4 mt-2">Explorar catálogo</a>
             </div>
         }
-    </div>
-}
+    </section>
+
+    <!-- SALES SECTION -->
+    <section class="section-sales mb-5 py-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+            <div>
+                <span class="badge bg-primary-subtle text-primary px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-house-door-fill me-1"></i> Para Comprar
+                </span>
+                <h2 class="display-6 fw-extrabold text-dark mb-1">Propiedades exclusivas en venta</h2>
+                <p class="text-secondary mb-0">Encuentra una inversión sólida o el hogar definitivo para tu familia.</p>
+            </div>
+            <a asp-controller="Home" asp-action="Buy" class="btn btn-outline-primary rounded-pill px-4 fw-bold d-inline-flex align-items-center gap-2">
+                Ver todas en venta <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        @if (homesForSale.Count > 0)
+        {
+            <partial name="_ListingCards" model="homesForSale" />
+        }
+        else
+        {
+            <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-4">
+                <i class="bi bi-house text-primary display-4 mb-3 d-block"></i>
+                <h4 class="fw-bold text-dark">No hay propiedades en venta disponibles</h4>
+                <p class="text-secondary max-w-md mx-auto">Vuelve pronto para revisar los nuevos ingresos inmobiliarios en tu zona.</p>
+                <a asp-controller="Home" asp-action="Buy" class="btn btn-outline-primary rounded-pill px-4 mt-2">Ver catálogo</a>
+            </div>
+        }
+    </section>
+
+    <!-- Why RealEase Section -->
+    <section class="why-realease-section bg-white rounded-4 border shadow-sm p-4 p-lg-5 mb-5">
+        <div class="text-center max-w-2xl mx-auto mb-5">
+            <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                Experiencia RealEase
+            </span>
+            <h2 class="display-6 fw-extrabold text-dark mb-2">¿Por qué buscar con RealEase?</h2>
+            <p class="text-secondary">Diseñado para que encontrar o alquilar una vivienda sea rápido, honesto y sin sorpresas.</p>
+        </div>
+
+        <div class="row g-4 text-center text-md-start">
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100 border-0">
+                    <div class="icon-bubble bg-success text-white rounded-4 mb-3 d-inline-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="bi bi-patch-check-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">100% Inmuebles Verificados</h5>
+                    <p class="text-secondary small mb-0">Cada publicación cuenta con fotografías reales, precios transparentes y datos confirmados por nuestro equipo.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100 border-0">
+                    <div class="icon-bubble bg-primary text-white rounded-4 mb-3 d-inline-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Agentes Locales Expertos</h5>
+                    <p class="text-secondary small mb-0">Conéctate directamente con asesores que conocen cada calle, sector y amenidad de la zona donde buscas vivir.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100 border-0">
+                    <div class="icon-bubble bg-teal text-white rounded-4 mb-3 d-inline-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Visitas en un Clic</h5>
+                    <p class="text-secondary small mb-0">Coordina recorridos de forma inmediata, recibe confirmaciones directas y administra tu itinerario sin burocracia.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to action: Sell / Rent out your property -->
+    <section class="cta-seller-card rounded-4 overflow-hidden position-relative p-4 p-lg-5 mb-5 shadow-lg text-white">
+        <div class="cta-backdrop">
+            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80" alt="Residencia de lujo" class="cta-bg-img" />
+            <div class="cta-overlay"></div>
+        </div>
+        <div class="row align-items-center position-relative g-4">
+            <div class="col-lg-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-3">
+                    Propietarios
+                </span>
+                <h2 class="display-6 fw-extrabold text-white mb-2">¿Tienes una propiedad para alquilar o vender?</h2>
+                <p class="lead text-white-50 mb-0">Publica con nosotros y llega a miles de compradores e inquilinos calificados con el respaldo de un agente asignado a tu sector.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a asp-controller="Home" asp-action="Sell" class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow">
+                    Hablar con un agente <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>

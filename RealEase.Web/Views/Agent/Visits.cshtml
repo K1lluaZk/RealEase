@@ -1,0 +1,251 @@
+@using RealEase.Application.Dtos.Visit
+@using RealEase.Web.Helpers
+@model List<VisitDto>
+
+@{
+    ViewData["Title"] = "Agenda de Citas y Visitas";
+    var upcoming = ViewData["UpcomingVisits"] as List<VisitDto> ?? new List<VisitDto>();
+    var past = ViewData["PastVisits"] as List<VisitDto> ?? new List<VisitDto>();
+    var upcomingCount = (int)(ViewData["UpcomingCount"] ?? 0);
+    var totalCount = (int)(ViewData["TotalCount"] ?? 0);
+}
+
+<style>
+    .re-agent-hero {
+        background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+        color: white;
+        padding: 2.75rem 0 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .re-agent-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(52, 211, 153, 0.15) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .visit-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 1.25rem;
+        overflow: hidden;
+    }
+    .visit-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -10px rgba(0,0,0,0.12) !important;
+    }
+    .date-badge-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 1rem;
+        min-width: 75px;
+        text-align: center;
+        padding: 0.6rem 0.4rem;
+    }
+</style>
+
+<div class="re-agent-hero mb-4">
+    <div class="container-xl position-relative" style="z-index: 1;">
+        <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb small mb-0">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Agent" asp-action="Dashboard" class="text-white-50 text-decoration-none">
+                        <i class="bi bi-speedometer2 me-1"></i>Panel de Agente
+                    </a>
+                </li>
+                <li class="breadcrumb-item text-white active" aria-current="page">Agenda de Citas</li>
+            </ol>
+        </nav>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-2">
+            <div>
+                <span class="badge bg-white text-success fw-bold rounded-pill px-3 py-1 mb-2">
+                    <i class="bi bi-calendar2-week me-1"></i> Agenda de Asesor
+                </span>
+                <h1 class="h2 fw-bold mb-1 text-white">Citas y Visitas con Clientes</h1>
+                <p class="text-white-50 small mb-0">Gestiona las visitas agendadas, fechas y confirmaciones para tus propiedades.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Agent" asp-action="Inquiries" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold btn-sm">
+                    <i class="bi bi-inbox me-1"></i> Ver Solicitudes
+                </a>
+                <a asp-controller="Agent" asp-action="Dashboard" class="btn btn-light text-success rounded-pill px-3 py-2 fw-semibold btn-sm shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Panel
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric counter ribbon -->
+        <div class="row g-3 mt-3">
+            <div class="col-6 col-md-3">
+                <div class="bg-white bg-opacity-10 rounded-4 p-3 border border-white border-opacity-10 backdrop-blur">
+                    <div class="text-white-50 small fw-semibold">Citas Próximas</div>
+                    <div class="fs-3 fw-bold text-white">@upcomingCount</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="bg-white bg-opacity-10 rounded-4 p-3 border border-white border-opacity-10 backdrop-blur">
+                    <div class="text-white-50 small fw-semibold">Total en Historial</div>
+                    <div class="fs-3 fw-bold text-white">@totalCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-xl pb-5">
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-pills mb-4 gap-2 bg-light p-2 rounded-4 d-inline-flex border" id="visitsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill fw-semibold px-4 py-2" id="upcoming-tab" data-bs-toggle="pill" data-bs-target="#upcoming" type="button" role="tab">
+                <i class="bi bi-calendar-check-fill me-1"></i> Próximas Citas (@upcoming.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-semibold px-4 py-2" id="past-tab" data-bs-toggle="pill" data-bs-target="#past" type="button" role="tab">
+                <i class="bi bi-clock-history me-1"></i> Pasadas o Canceladas (@past.Count)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="visitsTabContent">
+        <!-- Tab: Upcoming Visits -->
+        <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
+            @if (!upcoming.Any())
+            {
+                <div class="card border-0 rounded-4 shadow-sm text-center py-5 px-4 bg-white">
+                    <div class="mb-3">
+                        <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: #ecfdf5; color: #059669;">
+                            <i class="bi bi-calendar-plus fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">No tienes citas agendadas próximamente</h5>
+                    <p class="text-secondary small mb-3">Revisa las solicitudes de clientes entrantes para agendar nuevas citas.</p>
+                    <div>
+                        <a asp-controller="Agent" asp-action="Inquiries" class="btn btn-success rounded-pill px-4 fw-semibold">
+                            <i class="bi bi-inbox-fill me-1"></i> Ir a Solicitudes de Clientes
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var visit in upcoming)
+                    {
+                        var statusBadgeClass = visit.Status?.ToLower() switch {
+                            "confirmed" or "confirmada" => "bg-success-subtle text-success",
+                            "pending" or "pendiente" => "bg-warning-subtle text-warning-emphasis",
+                            "completed" or "completada" => "bg-primary-subtle text-primary",
+                            _ => "bg-light text-secondary"
+                        };
+
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm visit-card bg-white p-3 h-100">
+                                <div class="d-flex align-items-start gap-3">
+                                    <!-- Date box -->
+                                    <div class="date-badge-box flex-shrink-0">
+                                        <div class="text-uppercase fw-bold small text-success" style="font-size: 0.72rem;">@visit.VisitDate.ToString("MMM")</div>
+                                        <div class="fs-3 fw-bolder text-dark lh-1 my-1">@visit.VisitDate.Day</div>
+                                        <div class="text-secondary small" style="font-size: 0.75rem;">@visit.VisitDate.ToString("yyyy")</div>
+                                    </div>
+
+                                    <!-- Content info -->
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="badge @statusBadgeClass rounded-pill fw-semibold px-2 py-1 small">
+                                                @(string.IsNullOrWhiteSpace(visit.Status) ? "Programada" : visit.Status)
+                                            </span>
+                                            <span class="text-secondary small fw-medium">
+                                                <i class="bi bi-clock me-1 text-success"></i>@visit.VisitDate.ToString("hh:mm tt")
+                                            </span>
+                                        </div>
+
+                                        <h6 class="fw-bold text-dark mb-1">
+                                            <i class="bi bi-building text-success me-1"></i> Propiedad #@visit.PropertyId
+                                        </h6>
+
+                                        <p class="text-secondary small mb-2">
+                                            <i class="bi bi-person text-secondary me-1"></i>
+                                            <span class="text-muted">Cliente ID:</span> 
+                                            <span class="font-monospace">@visit.UserId.ToString().Substring(0, 8)...</span>
+                                        </p>
+
+                                        @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                                        {
+                                            <div class="bg-light rounded-3 p-2 small text-secondary mb-3 border">
+                                                <i class="bi bi-chat-left-text me-1 text-success"></i>
+                                                <em>"@visit.Notes"</em>
+                                            </div>
+                                        }
+
+                                        <div class="d-flex gap-2 pt-1 border-top">
+                                            <a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold">
+                                                <i class="bi bi-eye me-1"></i> Ver Propiedad
+                                            </a>
+                                            <a href="mailto:soporte@realease.com?subject=Cita%20Propiedad%20@visit.PropertyId" class="btn btn-light btn-sm rounded-pill px-3 text-secondary">
+                                                <i class="bi bi-envelope me-1"></i> Contactar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Tab: Past Visits -->
+        <div class="tab-pane fade" id="past" role="tabpanel">
+            @if (!past.Any())
+            {
+                <div class="card border-0 rounded-4 shadow-sm text-center py-5 px-4 bg-white">
+                    <p class="text-secondary mb-0">No hay citas anteriores registradas.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var visit in past)
+                    {
+                        var isCancelled = string.Equals(visit.Status, "cancelled", StringComparison.OrdinalIgnoreCase);
+
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm visit-card bg-white p-3 h-100 opacity-75">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="date-badge-box flex-shrink-0 bg-light border-light-subtle">
+                                        <div class="text-uppercase fw-bold small text-muted" style="font-size: 0.72rem;">@visit.VisitDate.ToString("MMM")</div>
+                                        <div class="fs-4 fw-bolder text-secondary lh-1 my-1">@visit.VisitDate.Day</div>
+                                        <div class="text-secondary small" style="font-size: 0.75rem;">@visit.VisitDate.ToString("yyyy")</div>
+                                    </div>
+
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="badge @(isCancelled ? "bg-danger-subtle text-danger" : "bg-secondary-subtle text-secondary") rounded-pill px-2 py-1 small">
+                                                @(isCancelled ? "Cancelada" : "Finalizada")
+                                            </span>
+                                            <span class="text-muted small">@visit.VisitDate.ToString("hh:mm tt")</span>
+                                        </div>
+
+                                        <h6 class="fw-semibold text-dark mb-1">
+                                            Propiedad #@visit.PropertyId
+                                        </h6>
+
+                                        @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                                        {
+                                            <p class="text-muted small mb-2 fst-italic">"@visit.Notes"</p>
+                                        }
+
+                                        <a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId" class="btn btn-sm btn-link text-decoration-none text-success p-0 fw-semibold">
+                                            Ver detalle de la propiedad &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

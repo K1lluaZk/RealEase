@@ -1,4 +1,5 @@
 @model List<RealEase.Application.Dtos.Property.PropertyDto>
+@using RealEase.Domain.Models
 
 @{
     ViewData["Title"] = "Propiedades";
@@ -6,7 +7,10 @@
 
 <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
     <div><h1 class="h2 mb-1">Propiedades</h1><p class="text-secondary mb-0">Catálogo conectado a la API de RealEase.</p></div>
-    <a asp-action="Create" class="btn btn-success">＋ Nueva propiedad</a>
+    @if (User.IsInRole(UserRoles.Admin))
+    {
+        <a asp-action="Create" class="btn btn-success">＋ Nueva propiedad</a>
+    }
 </div>
 
 @if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
@@ -31,6 +35,8 @@ else
         @foreach (var property in Model)
         {
             var image = property.Images?.FirstOrDefault();
+            var isSale = string.Equals(property.ListingType, "sale", StringComparison.OrdinalIgnoreCase);
+            var price = isSale ? property.SalePrice : property.PricePerNight;
             <div class="col-md-6 col-xl-4 property-card" data-search="@($"{property.Title} {property.Address}".ToLowerInvariant())" data-status="@property.Status">
                 <article class="card h-100 border-0 shadow-sm overflow-hidden">
                     @if (!string.IsNullOrWhiteSpace(image)) { <img src="@image" class="card-img-top" alt="@property.Title" style="height:210px;object-fit:cover" /> }
@@ -40,11 +46,14 @@ else
                         <h2 class="h5 mb-1">@property.Title</h2>
                         <p class="small text-secondary mb-3">@property.Address</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                            <strong>@property.PricePerNight.ToString("C") <span class="small text-secondary fw-normal">/ noche</span></strong>
+                            <strong>@(price?.ToString("C0") ?? "Consultar precio") @if (!isSale && price.HasValue) { <span class="small text-secondary fw-normal">/ noche</span> }</strong>
                             <div class="d-flex gap-2">
                                 <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
-                                <a asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                                <form asp-action="DeleteFromApi" asp-route-id="@property.Id" method="post" onsubmit="return confirm('¿Eliminar esta propiedad?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
+                                @if (User.IsInRole(UserRoles.Admin))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                                    <form asp-action="DeleteFromApi" asp-route-id="@property.Id" method="post" onsubmit="return confirm('¿Eliminar esta propiedad?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
+                                }
                             </div>
                         </div>
                     </div>

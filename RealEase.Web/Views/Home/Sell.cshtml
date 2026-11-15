@@ -1,0 +1,156 @@
+@model RealEase.Application.Dtos.AgentInquiry.AgentInquiryDto
+
+@{
+    ViewData["Title"] = "Vende o Alquila tu Propiedad";
+}
+
+<div class="container-xl py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-secondary">Inicio</a></li>
+            <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">Vender mi propiedad</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5 align-items-start">
+        <!-- Left Column: Value Proposition & Trust -->
+        <div class="col-lg-6">
+            <div class="pe-lg-4">
+                <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-3">
+                    <i class="bi bi-tag-fill me-1"></i> Asesoría Inmobiliaria
+                </span>
+                <h1 class="display-5 fw-extrabold text-dark mb-3">
+                    Vende o alquila tu propiedad con los mejores agentes de tu zona.
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Te conectamos de manera rápida y segura con un asesor inmobiliario certificado que conoce el mercado y la plusvalía de tu sector.
+                </p>
+
+                <!-- Value pillars -->
+                <div class="d-grid gap-3 mb-4">
+                    <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-sm">
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Valoración Real de Mercado</h6>
+                            <p class="text-secondary small mb-0">Determinamos el precio óptimo comparando ventas y alquileres recientes en tu ubicación.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-sm">
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-camera-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Fotografías Profesionales</h6>
+                            <p class="text-secondary small mb-0">Destaca tu propiedad con imágenes de alta calidad que atraen a compradores e inquilinos calificados.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-sm">
+                        <div class="rounded-circle bg-teal text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Cierre Seguro y Asesoría Legal</h6>
+                            <p class="text-secondary small mb-0">Acompañamiento en cada paso para garantizar una transacción transparente y sin complicaciones.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial quote -->
+                <div class="p-3 bg-light rounded-4 border">
+                    <p class="text-secondary small fst-italic mb-2">
+                        "Publicamos nuestro apartamento en RealEase y en menos de dos semanas ya teníamos un inquilino calificado con contrato firmado. El agente asignado fue impecable."
+                    </p>
+                    <span class="fw-bold text-dark small">— Carolina M., Propietaria en Piantini</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Inquiry Form Card -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-chat-square-dots-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-0">Cuéntanos sobre tu inmueble</h4>
+                        <small class="text-secondary">Sin costo ni compromiso. Respuesta en menos de 24 horas.</small>
+                    </div>
+                </div>
+
+                @if (TempData["InquirySuccess"] is string success)
+                {
+                    <div class="alert alert-success rounded-4 mb-4" role="alert">
+                        <div class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">¡Solicitud recibida con éxito!</h6>
+                                <p class="small mb-2">@success</p>
+                                @if (TempData["InquiryAgentName"] is string agentName)
+                                {
+                                    <div class="bg-white p-3 rounded-3 border small">
+                                        <strong>Agente asignado:</strong> @agentName <br />
+                                        @if (TempData["InquiryAgentEmail"] is string agentEmail) { <a href="mailto:@agentEmail">@agentEmail</a><br /> }
+                                        @if (TempData["InquiryAgentPhone"] is string agentPhone && !string.IsNullOrWhiteSpace(agentPhone)) { <a href="tel:@agentPhone">@agentPhone</a> }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (TempData["InquiryError"] is string error)
+                {
+                    <div class="alert alert-warning rounded-4 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @error
+                    </div>
+                }
+
+                <form asp-controller="Home" asp-action="ContactAgent" method="post" class="d-grid gap-3">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Intent" value="sell" />
+                    <input type="hidden" name="ReturnUrl" value="@Url.Action("Sell", "Home")" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark" for="sellerName">Tu Nombre completo</label>
+                            <input id="sellerName" name="Name" class="form-control rounded-pill bg-light border px-3" placeholder="Ej. Juan Pérez" autocomplete="name" required maxlength="120" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark" for="sellerPhone">Teléfono / WhatsApp</label>
+                            <input id="sellerPhone" name="PhoneNumber" type="tel" class="form-control rounded-pill bg-light border px-3" placeholder="(809) 000-0000" autocomplete="tel" required maxlength="40" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-bold text-dark" for="sellerEmail">Correo electrónico</label>
+                        <input id="sellerEmail" name="Email" type="email" class="form-control rounded-pill bg-light border px-3" placeholder="correo@ejemplo.com" autocomplete="email" required maxlength="254" />
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-bold text-dark" for="sellerLocation">Ciudad y sector de la propiedad</label>
+                        <input id="sellerLocation" name="Location" class="form-control rounded-pill bg-light border px-3" placeholder="Ej. Santo Domingo, Piantini / Bella Vista" required maxlength="120" />
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-bold text-dark" for="sellerMessage">Detalles de la propiedad <span class="text-secondary fw-normal">(opcional)</span></label>
+                        <textarea id="sellerMessage" name="Message" class="form-control rounded-4 bg-light border p-3" rows="3" placeholder="¿Cuántas habitaciones tiene? ¿Deseas vender o alquilar? ¿Algún detalle especial?" maxlength="1000"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm mt-2">
+                        <i class="bi bi-send-fill me-1"></i> Conectar con un agente
+                    </button>
+
+                    <p class="text-center text-secondary small mb-0 mt-1">
+                        <i class="bi bi-lock-fill text-muted me-1"></i> Respetamos tu privacidad. Tus datos nunca serán compartidos con terceros no autorizados.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

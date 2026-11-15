@@ -1,0 +1,364 @@
+@model RealEase.Web.ViewsModels.AgentDashboardViewModel
+@using RealEase.Domain.Models
+
+@{
+    ViewData["Title"] = "Panel del Agente";
+}
+
+<div class="container-xl py-4">
+    <!-- Agent Profile Header -->
+    <div class="card border-0 rounded-4 p-4 p-md-5 bg-white shadow-sm mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="width: 64px; height: 64px; font-size: 1.8rem;">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold text-uppercase">
+                            <i class="bi bi-patch-check-fill me-1"></i> Asesor Inmobiliario Oficial
+                        </span>
+                        <span class="text-secondary small">Zona: <strong>@Model.ServiceArea</strong></span>
+                    </div>
+                    <h2 class="display-6 fw-extrabold text-dark mb-0">Hola, @Model.AgentName</h2>
+                    <p class="text-secondary small mb-0">@Model.AgentEmail · Administra tus prospectos, visitas y contratos activos.</p>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-controller="Agent" asp-action="Inquiries" class="btn btn-outline-success rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1.5">
+                    <i class="bi bi-inbox-fill"></i> Bandeja de Solicitudes
+                    @if (Model.PendingInquiriesCount > 0)
+                    {
+                        <span class="badge bg-danger rounded-pill">@Model.PendingInquiriesCount</span>
+                    }
+                </a>
+                <a asp-controller="Contracts" asp-action="Create" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
+                    <i class="bi bi-file-earmark-plus"></i> Nuevo Contrato
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] is string success) { <div class="alert alert-success rounded-4 shadow-sm mb-4"><i class="bi bi-check-circle-fill me-2"></i>@success</div> }
+    @if (TempData["Error"] is string error) { <div class="alert alert-danger rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-triangle-fill me-2"></i>@error</div> }
+
+    <!-- 4 KPI Metrics Row -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-semibold">Leads Pendientes</span>
+                    <div class="rounded-3 p-2 bg-warning-subtle text-warning-emphasis d-flex align-items-center justify-content-center">
+                        <i class="bi bi-bell-fill fs-5"></i>
+                    </div>
+                </div>
+                <h2 class="fw-extrabold text-dark mb-0">@Model.PendingInquiriesCount</h2>
+                <small class="text-secondary">Clientes por contactar</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-semibold">Visitas en Agenda</span>
+                    <div class="rounded-3 p-2 bg-success-subtle text-success d-flex align-items-center justify-content-center">
+                        <i class="bi bi-calendar2-check-fill fs-5"></i>
+                    </div>
+                </div>
+                <h2 class="fw-extrabold text-dark mb-0">@Model.UpcomingVisitsCount</h2>
+                <small class="text-secondary">Recorridos programados</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-semibold">Contratos Activos</span>
+                    <div class="rounded-3 p-2 bg-primary-subtle text-primary d-flex align-items-center justify-content-center">
+                        <i class="bi bi-file-earmark-text-fill fs-5"></i>
+                    </div>
+                </div>
+                <h2 class="fw-extrabold text-dark mb-0">@Model.ActiveContractsCount</h2>
+                <small class="text-secondary">Arrendamientos en vigor</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-semibold">Volumen Total</span>
+                    <div class="rounded-3 p-2 bg-info-subtle text-info-emphasis d-flex align-items-center justify-content-center">
+                        <i class="bi bi-currency-dollar fs-5"></i>
+                    </div>
+                </div>
+                <h2 class="fw-extrabold text-dark mb-0">@Model.TotalVolume.ToString("C0")</h2>
+                <small class="text-secondary">En acuerdos gestionados</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="row g-4">
+        <!-- Left: Customer Inquiries & Leads -->
+        <div class="col-lg-8">
+            <!-- Leads Section -->
+            <div class="card border-0 rounded-4 shadow-sm bg-white mb-4 overflow-hidden">
+                <div class="card-header bg-white border-0 p-4 pb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">
+                            <i class="bi bi-people-fill text-success me-2"></i> Solicitudes Recientes de Clientes (Leads)
+                        </h5>
+                        <p class="text-secondary small mb-0">Personas interesadas en alquilar o vender propiedades en tu zona.</p>
+                    </div>
+                    <a asp-action="Inquiries" class="btn btn-sm btn-link text-success text-decoration-none fw-bold">
+                        Ver todas <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="card-body p-4 pt-2">
+                    @if (Model.RecentInquiries.Count == 0)
+                    {
+                        <div class="text-center py-4 text-secondary">
+                            <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
+                            <p class="mb-0">No tienes solicitudes pendientes en este momento.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-grid gap-3">
+                            @foreach (var inquiry in Model.RecentInquiries)
+                            {
+                                var isRent = string.Equals(inquiry.Intent, "rent", StringComparison.OrdinalIgnoreCase);
+                                var isPending = string.Equals(inquiry.Status, "pending", StringComparison.OrdinalIgnoreCase);
+                                var cleanPhone = new string(inquiry.PhoneNumber.Where(char.IsDigit).ToArray());
+
+                                <div class="p-3.5 rounded-4 border bg-light transition-all hover-shadow">
+                                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-2 mb-2">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <h6 class="fw-bold text-dark mb-0">@inquiry.Name</h6>
+                                                <span class="badge @(isRent ? "bg-success-subtle text-success" : "bg-primary-subtle text-primary") rounded-pill px-2.5 py-1 small">
+                                                    @(isRent ? "Interesado en Alquilar" : "Interesado en Vender")
+                                                </span>
+                                                <span class="badge @(isPending ? "bg-warning text-dark" : "bg-light text-secondary border") rounded-pill px-2 py-0.5" style="font-size:0.75rem;">
+                                                    @inquiry.Status
+                                                </span>
+                                            </div>
+                                            <p class="text-secondary small mb-0">
+                                                <i class="bi bi-geo-alt-fill text-success me-1"></i> @inquiry.Location · 
+                                                <span class="text-muted">@inquiry.CreatedAt.ToLocalTime().ToString("g")</span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Fast contact buttons -->
+                                        <div class="d-flex gap-1.5 flex-shrink-0">
+                                            @if (!string.IsNullOrWhiteSpace(cleanPhone))
+                                            {
+                                                <a href="https://wa.me/@cleanPhone" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1" title="Contactar por WhatsApp">
+                                                    <i class="bi bi-whatsapp"></i> WhatsApp
+                                                </a>
+                                                <a href="tel:@inquiry.PhoneNumber" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5" title="Llamar">
+                                                    <i class="bi bi-telephone-fill"></i>
+                                                </a>
+                                            }
+                                            <a href="mailto:@inquiry.Email" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5" title="Enviar correo">
+                                                <i class="bi bi-envelope-fill"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(inquiry.Message))
+                                    {
+                                        <div class="p-2.5 bg-white rounded-3 border small text-secondary mb-2.5">
+                                            <i class="bi bi-chat-left-quote-fill text-muted me-1"></i> @inquiry.Message
+                                        </div>
+                                    }
+
+                                    <!-- Status update quick actions -->
+                                    <div class="d-flex align-items-center justify-content-between pt-2 border-top small">
+                                        <span class="text-secondary">
+                                            Contacto: <strong>@inquiry.PhoneNumber</strong> | @inquiry.Email
+                                        </span>
+                                        <form asp-action="UpdateInquiryStatus" method="post" class="d-inline-flex align-items-center gap-1.5">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@inquiry.Id" />
+                                            <input type="hidden" name="returnUrl" value="@Url.Action("Dashboard")" />
+                                            <select name="status" class="form-select form-select-sm rounded-pill border py-0 px-2" style="font-size: 0.8rem; height: 28px;" onchange="this.form.submit()">
+                                                <option value="pending" selected="@(inquiry.Status == "pending")">Pendiente</option>
+                                                <option value="contacted" selected="@(inquiry.Status == "contacted")">Contactado</option>
+                                                <option value="scheduled" selected="@(inquiry.Status == "scheduled")">Visita Coordinada</option>
+                                                <option value="closed" selected="@(inquiry.Status == "closed")">Cerrado</option>
+                                            </select>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Upcoming Visits Section -->
+            <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden">
+                <div class="card-header bg-white border-0 p-4 pb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">
+                            <i class="bi bi-calendar2-week-fill text-success me-2"></i> Próximas Visitas Programadas
+                        </h5>
+                        <p class="text-secondary small mb-0">Citas presenciales con prospectos e inquilinos.</p>
+                    </div>
+                    <a asp-controller="Visits" asp-action="Index" class="btn btn-sm btn-link text-success text-decoration-none fw-bold">
+                        Ver todas <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="card-body p-4 pt-2">
+                    @if (Model.UpcomingVisits.Count == 0)
+                    {
+                        <div class="text-center py-4 text-secondary">
+                            <i class="bi bi-calendar-x display-4 text-muted d-block mb-2"></i>
+                            <p class="mb-0">No hay visitas agendadas para los próximos días.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-grid gap-2.5">
+                            @foreach (var visit in Model.UpcomingVisits)
+                            {
+                                <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-light border">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-3 bg-success-subtle text-success p-2.5 d-flex flex-column align-items-center justify-content-center" style="min-width: 54px;">
+                                            <span class="fw-extrabold fs-5 lh-1">@visit.VisitDate.ToLocalTime().Day</span>
+                                            <small class="fw-bold text-uppercase" style="font-size: 0.65rem;">@visit.VisitDate.ToLocalTime().ToString("MMM")</small>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0.5">Propiedad #@visit.PropertyId</h6>
+                                            <p class="text-secondary small mb-0">
+                                                <i class="bi bi-clock me-1 text-success"></i> @visit.VisitDate.ToLocalTime().ToString("hh:mm tt") ·
+                                                <span class="badge text-bg-light border">@(visit.Status ?? "Pendiente")</span>
+                                            </p>
+                                            @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                                            {
+                                                <small class="text-muted d-block text-truncate" style="max-width: 320px;">@visit.Notes</small>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId" class="btn btn-sm btn-light border rounded-pill px-3">
+                                            Ver inmueble
+                                        </a>
+                                        <a asp-controller="Visits" asp-action="Edit" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+                                            Gestionar
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Fast Actions & Active Contracts -->
+        <div class="col-lg-4">
+            <!-- Quick Agent Navigation Box -->
+            <div class="card border-0 rounded-4 shadow-sm bg-white p-4 mb-4">
+                <h5 class="fw-bold text-dark mb-3">Herramientas del Asesor</h5>
+                <div class="d-grid gap-2">
+                    <a asp-controller="Agent" asp-action="Inquiries" class="btn btn-light text-start rounded-4 p-3 border d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <i class="bi bi-inbox-fill text-success fs-5"></i>
+                            <div>
+                                <strong class="d-block text-dark small">Bandeja de Leads</strong>
+                                <small class="text-secondary">Solicitudes de alquiler y venta</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-secondary"></i>
+                    </a>
+
+                    <a asp-controller="Visits" asp-action="Index" class="btn btn-light text-start rounded-4 p-3 border d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <i class="bi bi-calendar2-check-fill text-success fs-5"></i>
+                            <div>
+                                <strong class="d-block text-dark small">Agenda de Visitas</strong>
+                                <small class="text-secondary">Confirmar o reprogramar citas</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-secondary"></i>
+                    </a>
+
+                    <a asp-controller="Contracts" asp-action="Index" class="btn btn-light text-start rounded-4 p-3 border d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <i class="bi bi-file-earmark-text-fill text-primary fs-5"></i>
+                            <div>
+                                <strong class="d-block text-dark small">Gestión de Contratos</strong>
+                                <small class="text-secondary">Acuerdos y términos legales</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-secondary"></i>
+                    </a>
+
+                    <a asp-controller="Payments" asp-action="Index" class="btn btn-light text-start rounded-4 p-3 border d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <i class="bi bi-credit-card-fill text-info fs-5"></i>
+                            <div>
+                                <strong class="d-block text-dark small">Historial de Pagos</strong>
+                                <small class="text-secondary">Transacciones y recibos</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-secondary"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Contracts Widget -->
+            <div class="card border-0 rounded-4 shadow-sm bg-white p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0">Contratos Recientes</h5>
+                    <a asp-controller="Contracts" asp-action="Create" class="btn btn-sm btn-outline-success rounded-pill px-2.5" title="Nuevo Contrato">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                </div>
+
+                @if (Model.RecentContracts.Count == 0)
+                {
+                    <p class="text-secondary small mb-0">No hay contratos registrados recientemente.</p>
+                }
+                else
+                {
+                    <div class="d-grid gap-2.5">
+                        @foreach (var contract in Model.RecentContracts)
+                        {
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="text-dark small">Contrato #@contract.Id</strong>
+                                    <span class="badge bg-success-subtle text-success rounded-pill">@contract.Status</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center text-secondary small">
+                                    <span>@contract.StartDate.ToString("d") – @contract.EndDate.ToString("d")</span>
+                                    <span class="fw-bold text-dark">@contract.TotalAmount.ToString("C0")</span>
+                                </div>
+                                <div class="text-end mt-2 pt-2 border-top">
+                                    <a asp-controller="Contracts" asp-action="Details" asp-route-id="@contract.Id" class="small text-success text-decoration-none fw-semibold">
+                                        Ver detalles <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Managed Properties Snapshot -->
+            <div class="card border-0 rounded-4 shadow-sm bg-white p-4">
+                <h5 class="fw-bold text-dark mb-3">Portafolio Inmobiliario</h5>
+                <p class="text-secondary small mb-3">Propiedades disponibles para coordinar con clientes en búsqueda de compra o alquiler.</p>
+                <a asp-controller="Home" asp-action="Rent" class="btn btn-outline-dark btn-sm rounded-pill w-100 fw-bold">
+                    <i class="bi bi-search me-1"></i> Explorar Catálogo Completo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

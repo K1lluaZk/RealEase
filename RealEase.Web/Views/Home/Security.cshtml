@@ -1,0 +1,126 @@
+@{
+    ViewData["Title"] = "Seguridad y Confianza";
+}
+
+<div class="container-xl py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-secondary">Inicio</a></li>
+            <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">Seguridad</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card border-0 rounded-4 p-4 p-md-5 mb-5 bg-white shadow-sm">
+        <div class="max-w-2xl">
+            <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-3">
+                <i class="bi bi-shield-fill-check me-1"></i> Garantía RealEase
+            </span>
+            <h1 class="display-5 fw-extrabold text-dark mb-3">Seguridad y Confianza en Cada Paso</h1>
+            <p class="lead text-secondary mb-0">
+                Alquilar o comprar un hogar es una de las decisiones más importantes. Conoce las medidas tecnológicas y humanas que implementamos en <strong class="text-success">RealEase</strong> para protegerte contra fraudes e información engañosa.
+            </p>
+        </div>
+    </div>
+
+    <!-- Security Pillars Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="rounded-4 bg-success text-white d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px; font-size: 1.4rem;">
+                    <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Verificación de Publicaciones</h5>
+                <p class="text-secondary small mb-0">
+                    Inspeccionamos que las propiedades existan, cuenten con fotos auténticas y que los precios de alquiler o venta sean reales y sin costos sorpresa.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="rounded-4 bg-primary text-white d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px; font-size: 1.4rem;">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Agentes Certificados</h5>
+                <p class="text-secondary small mb-0">
+                    Solo asesores inmobiliarios con identidad validada y conocimiento verificado de su zona operan y responden solicitudes en RealEase.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm h-100">
+                <div class="rounded-4 bg-dark text-white d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px; font-size: 1.4rem;">
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Infraestructura Blindada</h5>
+                <p class="text-secondary small mb-0">
+                    Protegemos todas las conexiones con cifrado HTTPS / TLS moderno, tokens anti-falsificación (CSRF) y sesiones seguras para salvaguardar tu información.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practical Safety Tips for Buyers & Renters -->
+    <div class="card border-0 rounded-4 p-4 p-md-5 bg-white shadow-sm mb-5">
+        <div class="max-w-2xl mb-4">
+            <h4 class="fw-bold text-dark mb-2">Consejos de Seguridad para Inquilinos y Compradores</h4>
+            <p class="text-secondary small">Recomendaciones esenciales para que tu experiencia de alquiler o compra sea 100% segura:</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-light">
+                    <i class="bi bi-eye-fill text-success fs-4"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Visita la propiedad antes de pagar</h6>
+                        <p class="text-secondary small mb-0">Siempre agenda una visita guiada con nuestro agente para conocer el espacio en persona o por videollamada verificada antes de cualquier depósito.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-light">
+                    <i class="bi bi-credit-card-2-front-fill text-success fs-4"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Nunca envíes dinero a cuentas dudosas</h6>
+                        <p class="text-secondary small mb-0">No realices transferencias de apartado a terceros sin antes haber recibido y revisado el contrato formal y la identidad del propietario o agencia.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-light">
+                    <i class="bi bi-file-earmark-text-fill text-success fs-4"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Revisa el contrato y sus cláusulas</h6>
+                        <p class="text-secondary small mb-0">Asegúrate de que las condiciones de depósito, mantenimiento, servicios y duración del alquiler estén por escrito de forma clara.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-light">
+                    <i class="bi bi-headset text-success fs-4"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Soporte y reporte de incidentes</h6>
+                        <p class="text-secondary small mb-0">Si detectas alguna irregularidad en una propiedad o asesor, repórtalo de inmediato a nuestro canal de soporte para investigarlo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Contact -->
+    <div class="card border-0 rounded-4 p-4 p-md-5 bg-success text-white text-center shadow-lg">
+        <div class="max-w-xl mx-auto">
+            <h3 class="fw-extrabold mb-2">Tu tranquilidad es nuestro principal compromiso</h3>
+            <p class="text-white-50 mb-4">¿Tienes dudas sobre una propiedad o deseas confirmar la asignación de un agente?</p>
+            <a href="mailto:seguridad@realease.com" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-shield-check text-success me-1"></i> Contactar a Seguridad RealEase
+            </a>
+        </div>
+    </div>
+</div>

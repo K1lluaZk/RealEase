@@ -1,0 +1,321 @@
+@model List<RealEase.Application.Dtos.Property.PropertyDto>
+
+@{
+    var isSale = string.Equals(ViewData["ListingType"]?.ToString(), "sale", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = isSale ? "Casas y Propiedades en Venta" : "Propiedades y Apartamentos en Alquiler";
+}
+
+<div class="container-xl py-4">
+    <!-- Breadcrumb & Intro -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-secondary">Inicio</a></li>
+            <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">@(isSale ? "Comprar" : "Alquilar")</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge @(isSale ? "bg-primary" : "bg-success") px-3 py-1.5 rounded-pill fw-bold text-uppercase">
+                    <i class="bi @(isSale ? "bi-house-heart-fill" : "bi-key-fill") me-1"></i> @(isSale ? "Venta Exclusiva" : "Alquiler Verificado")
+                </span>
+                <span class="text-secondary small fw-medium">República Dominicana</span>
+            </div>
+            <h1 class="display-5 fw-extrabold text-dark mb-1">
+                @(isSale ? "Casas y apartamentos en venta" : "Hogares y apartamentos en alquiler")
+            </h1>
+            <p class="text-secondary mb-0">
+                @(isSale 
+                    ? "Explora propiedades disponibles para compra con títulos al día y asesoría integral." 
+                    : "Descubre espacios únicos en alquiler, completamente listos para mudarte y con contacto directo.")
+            </p>
+        </div>
+
+        <!-- Mode Switcher Pill (Alquilar vs Comprar) -->
+        <div class="btn-group p-1 bg-light rounded-pill border shadow-sm align-self-start align-self-md-auto" role="group">
+            <a asp-controller="Home" asp-action="Rent" class="btn btn-sm rounded-pill px-4 fw-bold @(!isSale ? "btn-success text-white shadow-sm" : "btn-light text-secondary border-0")">
+                <i class="bi bi-key-fill me-1"></i> Alquiler
+            </a>
+            <a asp-controller="Home" asp-action="Buy" class="btn btn-sm rounded-pill px-4 fw-bold @(isSale ? "btn-primary text-white shadow-sm" : "btn-light text-secondary border-0")">
+                <i class="bi bi-house-fill me-1"></i> Comprar
+            </a>
+        </div>
+    </div>
+
+    @if (ViewData["ApiError"] is string apiError)
+    {
+        <div class="alert alert-warning rounded-4 shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @apiError
+        </div>
+    }
+
+    <!-- Modern Filter Toolbar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+        <div class="row g-2 align-items-center">
+            <!-- Search Input -->
+            <div class="col-12 col-md-4 col-lg-5">
+                <div class="input-group search-filter-box rounded-pill bg-light px-2 border">
+                    <span class="input-group-text bg-transparent border-0 text-secondary ps-2">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input id="listingSearch" 
+                           value="@Context.Request.Query["query"]" 
+                           class="form-control border-0 bg-transparent ps-1" 
+                           placeholder="Buscar por ciudad, sector o dirección..." 
+                           aria-label="Buscar propiedades" />
+                    <button class="btn btn-sm bg-transparent border-0 text-secondary" type="button" id="clearSearchBtn" title="Limpiar búsqueda">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Property Type Filter -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <select id="typeFilter" class="form-select rounded-pill bg-light border filter-select" aria-label="Tipo de propiedad">
+                    <option value="">Tipo de inmueble</option>
+                    @foreach (var type in Model.Select(property => property.PropertyType).Where(type => !string.IsNullOrWhiteSpace(type)).Distinct().OrderBy(type => type))
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Bedrooms Filter -->
+            <div class="col-6 col-md-2 col-lg-2">
+                <select id="bedroomFilter" class="form-select rounded-pill bg-light border filter-select" aria-label="Habitaciones">
+                    <option value="">Habitaciones</option>
+                    <option value="1">1+ hab</option>
+                    <option value="2">2+ hab</option>
+                    <option value="3">3+ hab</option>
+                    <option value="4">4+ hab</option>
+                </select>
+            </div>
+
+            <!-- Sorting Dropdown -->
+            <div class="col-12 col-md-3 col-lg-3">
+                <select id="sortFilter" class="form-select rounded-pill bg-light border filter-select" aria-label="Ordenar por">
+                    <option value="default">Ordenar: Destacados</option>
+                    <option value="price-asc">Precio: Menor a Mayor</option>
+                    <option value="price-desc">Precio: Mayor a Menor</option>
+                    <option value="beds-desc">Más habitaciones</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <h5 class="fw-bold text-dark mb-0">Listado de propiedades</h5>
+            <span id="listingCount" class="badge bg-secondary-subtle text-secondary rounded-pill fw-semibold px-3 py-1.5">
+                @Model.Count propiedades
+            </span>
+        </div>
+
+        <button id="resetFiltersBtn" class="btn btn-sm btn-link text-success text-decoration-none fw-semibold d-none align-items-center gap-1">
+            <i class="bi bi-arrow-counterclockwise"></i> Restablecer filtros
+        </button>
+    </div>
+
+    <!-- Properties Grid -->
+    @if (Model.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="listingsContainer">
+            @foreach (var property in Model)
+            {
+                var price = isSale ? property.SalePrice : property.PricePerNight;
+                var displayImage = PropertyImageHelper.GetImageUrl(property.Images?.FirstOrDefault(), property.Id, property.PropertyType);
+                var numPrice = price ?? 0;
+                var numBeds = property.Bedrooms ?? 1;
+
+                <div class="col listing-item" 
+                     data-search="@($"{property.Title} {property.Address} {property.City}").ToLowerInvariant()" 
+                     data-type="@(property.PropertyType ?? "")" 
+                     data-bedrooms="@numBeds"
+                     data-price="@numPrice">
+                    <article class="card h-100 property-card border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                        <div class="property-img-wrapper position-relative">
+                            <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="d-block overflow-hidden">
+                                <img src="@displayImage" alt="@property.Title" class="property-thumb-img w-100 object-fit-cover" loading="lazy" />
+                            </a>
+
+                            <!-- Badges -->
+                            <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                                <span class="badge @(isSale ? "bg-primary" : "bg-success") px-3 py-2 rounded-pill fw-bold shadow-sm">
+                                    <i class="bi @(isSale ? "bi-house" : "bi-key") me-1"></i> @(isSale ? "En Venta" : "En Alquiler")
+                                </span>
+                                @if (!string.IsNullOrWhiteSpace(property.PropertyType))
+                                {
+                                    <span class="badge bg-dark bg-opacity-75 backdrop-blur px-2.5 py-2 rounded-pill fw-medium text-white shadow-sm">
+                                        @property.PropertyType
+                                    </span>
+                                }
+                            </div>
+
+                            <!-- Favorite Button -->
+                            <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 property-fav-btn" title="Guardar en favoritos" onclick="this.classList.toggle('active'); event.stopPropagation();">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+
+                        <div class="card-body p-4 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-baseline gap-2 mb-2">
+                                    <h4 class="property-price fw-extrabold @(isSale ? "text-primary" : "text-success") mb-0">
+                                        @(price?.ToString("C0") ?? "Consultar precio")
+                                    </h4>
+                                    @if (!isSale && price.HasValue)
+                                    {
+                                        <span class="text-secondary small fw-medium">/ noche</span>
+                                    }
+                                </div>
+
+                                <h5 class="card-title fw-bold text-dark text-truncate mb-1">
+                                    <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="text-decoration-none text-dark hover-success">
+                                        @property.Title
+                                    </a>
+                                </h5>
+
+                                <p class="card-text text-secondary small d-flex align-items-center gap-1 mb-3 text-truncate">
+                                    <i class="bi bi-geo-alt @(isSale ? "text-primary" : "text-success")"></i>
+                                    @(string.IsNullOrWhiteSpace(property.City) ? "República Dominicana" : property.City)
+                                    @if (!string.IsNullOrWhiteSpace(property.Address))
+                                    {
+                                        <span>· @property.Address</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="property-specs-bar pt-3 border-top d-flex align-items-center justify-content-between text-secondary small">
+                                <span class="d-flex align-items-center gap-1.5" title="Habitaciones">
+                                    <i class="bi bi-door-closed text-dark fs-6"></i>
+                                    <strong class="text-dark">@numBeds</strong> hab
+                                </span>
+                                <span class="text-secondary opacity-50">|</span>
+                                <span class="d-flex align-items-center gap-1.5" title="Baños">
+                                    <i class="bi bi-droplet text-dark fs-6"></i>
+                                    <strong class="text-dark">@(property.Bathrooms ?? 1)</strong> baños
+                                </span>
+                                <span class="text-secondary opacity-50">|</span>
+                                <span class="d-flex align-items-center gap-1.5" title="Huéspedes / Capacidad">
+                                    <i class="bi bi-people text-dark fs-6"></i>
+                                    <strong class="text-dark">@(property.MaxGuests ?? 2)</strong> pers
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-0 px-4 pb-4 pt-0">
+                            <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="btn btn-outline-dark btn-sm w-100 rounded-pill fw-semibold py-2">
+                                Ver detalles y contactar <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+
+        <!-- No matching filters placeholder -->
+        <div id="noListingMatches" class="text-center py-5 bg-white rounded-4 border shadow-sm p-4 mt-4 d-none">
+            <i class="bi bi-search text-success display-4 mb-3 d-block"></i>
+            <h4 class="fw-bold text-dark">No se encontraron propiedades</h4>
+            <p class="text-secondary max-w-md mx-auto">No hay inmuebles que coincidan con los filtros seleccionados. Intenta ampliar tus criterios de búsqueda.</p>
+            <button type="button" class="btn btn-outline-success rounded-pill px-4 mt-2" onclick="document.getElementById('resetFiltersBtn').click()">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Restablecer filtros
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-5">
+            <i class="bi @(isSale ? "bi-house" : "bi-key") text-success display-3 mb-3 d-block"></i>
+            <h3 class="fw-bold text-dark">@(isSale ? "No hay propiedades en venta ahora mismo" : "No hay propiedades en alquiler disponibles")</h3>
+            <p class="text-secondary max-w-md mx-auto mb-4">
+                Estamos registrando y verificando nuevos inmuebles a diario. Explora nuestras otras opciones o contáctanos para ayudarte a encontrar lo que buscas.
+            </p>
+            <a asp-controller="Home" asp-action="@(isSale ? "Rent" : "Buy")" class="btn btn-success rounded-pill px-4 fw-bold">
+                Ver @(isSale ? "propiedades en alquiler" : "casas en venta")
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const search = document.getElementById('listingSearch');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const type = document.getElementById('typeFilter');
+            const bedrooms = document.getElementById('bedroomFilter');
+            const sort = document.getElementById('sortFilter');
+            const resetBtn = document.getElementById('resetFiltersBtn');
+            const container = document.getElementById('listingsContainer');
+            const empty = document.getElementById('noListingMatches');
+            const count = document.getElementById('listingCount');
+            const items = [...document.querySelectorAll('.listing-item')];
+
+            const applyFilters = () => {
+                const query = (search?.value || '').trim().toLowerCase();
+                const selectedType = type?.value || '';
+                const minimumBedrooms = Number(bedrooms?.value || 0);
+
+                let visibleCount = 0;
+                const hasFilters = query.length > 0 || selectedType !== '' || minimumBedrooms > 0;
+                resetBtn?.classList.toggle('d-none', !hasFilters);
+
+                items.forEach(item => {
+                    const matchesQuery = !query || item.dataset.search.includes(query);
+                    const matchesType = !selectedType || item.dataset.type === selectedType;
+                    const matchesBeds = Number(item.dataset.bedrooms) >= minimumBedrooms;
+
+                    const isMatch = matchesQuery && matchesType && matchesBeds;
+                    item.classList.toggle('d-none', !isMatch);
+                    if (isMatch) visibleCount++;
+                });
+
+                // Sorting
+                if (sort && container) {
+                    const sortVal = sort.value;
+                    const visibleItems = items.filter(el => !el.classList.contains('d-none'));
+
+                    if (sortVal === 'price-asc') {
+                        visibleItems.sort((a, b) => Number(a.dataset.price) - Number(b.dataset.price));
+                    } else if (sortVal === 'price-desc') {
+                        visibleItems.sort((a, b) => Number(b.dataset.price) - Number(a.dataset.price));
+                    } else if (sortVal === 'beds-desc') {
+                        visibleItems.sort((a, b) => Number(b.dataset.bedrooms) - Number(a.dataset.bedrooms));
+                    }
+
+                    visibleItems.forEach(el => container.appendChild(el));
+                }
+
+                if (count) {
+                    count.textContent = `${visibleCount} ${visibleCount === 1 ? 'propiedad' : 'propiedades'}`;
+                }
+                empty?.classList.toggle('d-none', visibleCount > 0);
+            };
+
+            search?.addEventListener('input', applyFilters);
+            type?.addEventListener('change', applyFilters);
+            bedrooms?.addEventListener('change', applyFilters);
+            sort?.addEventListener('change', applyFilters);
+
+            clearBtn?.addEventListener('click', () => {
+                if (search) {
+                    search.value = '';
+                    applyFilters();
+                }
+            });
+
+            resetBtn?.addEventListener('click', () => {
+                if (search) search.value = '';
+                if (type) type.value = '';
+                if (bedrooms) bedrooms.value = '';
+                if (sort) sort.value = 'default';
+                applyFilters();
+            });
+
+            applyFilters();
+        })();
+    </script>
+}

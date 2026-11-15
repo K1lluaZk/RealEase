@@ -5,98 +5,107 @@
     ViewData["Title"] = "Editar Propiedad";
 }
 
-<div class="max-w-3xl mx-auto px-4 py-8">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Editar Propiedad</h1>
-        <p class="mt-2 text-sm text-gray-500">Modifica los campos necesarios para actualizar el estado del inmueble.</p>
+<section class="edit-page edit-page--property">
+    <div class="page-heading edit-page-heading">
+        <div class="edit-page-title">
+            <span class="edit-page-icon"><i class="bi bi-house-gear"></i></span>
+            <div><span class="eyebrow">Propiedades · #@Model.Id</span><h1>Editar propiedad</h1><p>Actualiza la información y las características del inmueble.</p></div>
+        </div>
+        <a href="/Properties" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a propiedades</a>
     </div>
 
-    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
-        <form asp-action="Edit" id="editPropertyForm" class="space-y-6">
-            <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+    <form asp-action="Edit" id="editPropertyForm" class="form-surface card border-0">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" id="propertyIdHidden" />
+        <div class="form-surface-heading"><span class="detail-icon"><i class="bi bi-pencil-square"></i></span><div><h2>Detalles del inmueble</h2><p>Los datos claros ayudan a presentar mejor la propiedad.</p></div></div>
 
-            <input type="hidden" asp-for="Id" id="propertyIdHidden" />
-
-            <div>
-                <label asp-for="Title" class="block text-sm font-medium text-gray-700 mb-1">Título del Anuncio</label>
-                <input asp-for="Title" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="titleInput" value="@Model.Title" placeholder="Ej. Casa en venta" />
-                <span asp-validation-for="Title" class="text-xs text-red-500 mt-1 block"></span>
+        <div class="row g-3">
+            <div class="col-12">
+                <label asp-for="Title" class="form-label">Título del anuncio</label>
+                <input asp-for="Title" class="form-control" id="titleInput" value="@Model.Title" placeholder="Ej. Casa en venta" />
+                <span asp-validation-for="Title" class="text-danger small"></span>
             </div>
-
-            <div>
-                <label asp-for="ImageUrl" class="block text-sm font-medium text-gray-700 mb-1">Enlace de la Imagen (URL)</label>
-                <input asp-for="ImageUrl" type="url" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="imageUrlInput" value="@Model.ImageUrl" placeholder="https://..." />
-                <span asp-validation-for="ImageUrl" class="text-xs text-red-500 mt-1 block"></span>
+            <div class="col-12">
+                <label asp-for="ImageUrl" class="form-label">Enlace de la imagen (URL)</label>
+                <input asp-for="ImageUrl" type="url" class="form-control" id="imageUrlInput" value="@Model.ImageUrl" placeholder="https://..." />
+                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
             </div>
-
-            <div>
-                <label asp-for="Description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                <textarea asp-for="Description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none resize-none" id="descriptionInput" placeholder="Breve descripción...">@Model.Description</textarea>
-                <span asp-validation-for="Description" class="text-xs text-red-500 mt-1 block"></span>
+            <div class="col-12">
+                <label asp-for="Description" class="form-label">Descripción</label>
+                <textarea asp-for="Description" rows="4" class="form-control" id="descriptionInput" placeholder="Breve descripción...">@Model.Description</textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
             </div>
-
-            <div>
-                <label asp-for="Address" class="block text-sm font-medium text-gray-700 mb-1">Dirección Exacta</label>
-                <input asp-for="Address" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="addressInput" value="@Model.Address" placeholder="Ej. Calle Principal #123" />
-                <span asp-validation-for="Address" class="text-xs text-red-500 mt-1 block"></span>
+            <div class="col-12">
+                <label asp-for="Address" class="form-label">Dirección exacta</label>
+                <input asp-for="Address" class="form-control" id="addressInput" value="@Model.Address" placeholder="Ej. Calle Principal #123" />
+                <span asp-validation-for="Address" class="text-danger small"></span>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label asp-for="PropertyType" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Inmueble</label>
-                    <input asp-for="PropertyType" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="propertyTypeInput" value="@Model.PropertyType" placeholder="Ej. Apartamento..." />
-                    <span asp-validation-for="PropertyType" class="text-xs text-red-500 mt-1 block"></span>
+            <div class="col-12">
+                <label asp-for="City" class="form-label">Ciudad o zona</label>
+                <input asp-for="City" class="form-control" id="cityInput" value="@Model.City" placeholder="Ej. Santo Domingo" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="PropertyType" class="form-label">Tipo de inmueble</label>
+                <input asp-for="PropertyType" class="form-control" id="propertyTypeInput" value="@Model.PropertyType" placeholder="Ej. Apartamento..." />
+                <span asp-validation-for="PropertyType" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ListingType" class="form-label">Operación</label>
+                <select asp-for="ListingType" class="form-select" id="listingTypeInput">
+                    <option value="rent">Alquiler</option>
+                    <option value="sale">Venta</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Status" class="form-label">Estado</label>
+                <select asp-for="Status" class="form-select" id="statusInput">
+                    <option value="Disponible" selected="@(Model.Status == "Disponible")">Disponible</option>
+                    <option value="Mantenimiento" selected="@(Model.Status == "Mantenimiento")">Mantenimiento</option>
+                    <option value="Ocupado" selected="@(Model.Status == "Ocupado")">Ocupado</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4" id="nightlyPriceField">
+                <label asp-for="PricePerNight" class="form-label">Precio por noche (USD)</label>
+                <input asp-for="PricePerNight" type="number" step="0.01" class="form-control" id="pricePerNightInput" value="@Model.PricePerNight" placeholder="0.00" />
+                <span asp-validation-for="PricePerNight" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4 @(string.Equals(Model.ListingType, "sale", StringComparison.OrdinalIgnoreCase) ? "" : "d-none")" id="salePriceField">
+                <label asp-for="SalePrice" class="form-label">Precio de venta (USD)</label>
+                <input asp-for="SalePrice" type="number" min="0" step="0.01" class="form-control" id="salePriceInput" value="@Model.SalePrice" placeholder="0.00" />
+            </div>
+            <div class="col-12">
+                <div class="edit-supplement">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Capacity" class="form-label">Capacidad</label>
+                            <input asp-for="Capacity" type="number" min="1" class="form-control" id="capacityInput" value="@Model.Capacity" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Bedrooms" class="form-label">Habitaciones</label>
+                            <input asp-for="Bedrooms" type="number" min="0" class="form-control" id="bedroomsInput" value="@Model.Bedrooms" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Bathrooms" class="form-label">Baños</label>
+                            <input asp-for="Bathrooms" type="number" min="0" class="form-control" id="bathroomsInput" value="@Model.Bathrooms" />
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    <label asp-for="Status" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                    <select asp-for="Status" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none bg-white" id="statusInput">
-                        <option value="Disponible" selected="@(Model.Status == "Disponible")">Disponible</option>
-                        <option value="Mantenimiento" selected="@(Model.Status == "Mantenimiento")">Mantenimiento</option>
-                        <option value="Ocupado" selected="@(Model.Status == "Ocupado")">Ocupado</option>
-                    </select>
-                    <span asp-validation-for="Status" class="text-xs text-red-500 mt-1 block"></span>
-                </div>
-
-                <div>
-                    <label asp-for="PricePerNight" class="block text-sm font-medium text-gray-700 mb-1">Precio por Noche (USD)</label>
-                    <input asp-for="PricePerNight" type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="pricePerNightInput" value="@Model.PricePerNight" placeholder="0.00" />
-                    <span asp-validation-for="PricePerNight" class="text-xs text-red-500 mt-1 block"></span>
-                </div>
             </div>
-
-            <div class="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <div>
-                    <label asp-for="Capacity" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Capacidad</label>
-                    <input asp-for="Capacity" type="number" min="1" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="capacityInput" value="@Model.Capacity" />
-                </div>
-                <div>
-                    <label asp-for="Bedrooms" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Habitaciones</label>
-                    <input asp-for="Bedrooms" type="number" min="0" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="bedroomsInput" value="@Model.Bedrooms" />
-                </div>
-                <div>
-                    <label asp-for="Bathrooms" class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Baños</label>
-                    <input asp-for="Bathrooms" type="number" min="0" class="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" id="bathroomsInput" value="@Model.Bathrooms" />
-                </div>
+            <div class="col-12">
+                <label asp-for="OwnerId" class="form-label">ID del dueño</label>
+                <input asp-for="OwnerId" type="text" class="form-control" id="ownerIdInput" value="@Model.OwnerId" placeholder="UUID del usuario" />
+                <span asp-validation-for="OwnerId" class="text-danger small"></span>
             </div>
+        </div>
 
-            <div>
-                <label asp-for="OwnerId" class="block text-sm font-medium text-gray-700 mb-1">ID del Dueño</label>
-                <input asp-for="OwnerId" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="ownerIdInput" value="@Model.OwnerId" placeholder="UUID del usuario en Supabase Auth" />
-                <span asp-validation-for="OwnerId" class="text-xs text-red-500 mt-1 block"></span>
-            </div>
-
-            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
-                <a href="/Properties" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
-                    Cancelar
-                </a>
-                <button type="button" id="UpdatePropertyButton" class="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm shadow-emerald-600/10 transition-all duration-200">
-                    Guardar Cambios
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="form-surface-actions">
+            <a href="/Properties" class="btn btn-light">Cancelar</a>
+            <button type="button" id="UpdatePropertyButton" class="btn btn-realease"><i class="bi bi-check2-circle"></i> Guardar cambios</button>
+        </div>
+    </form>
+</section>
 
 @section Scripts
 {
@@ -115,7 +124,10 @@
                     Images: $('#imageUrlInput').val() ? [$('#imageUrlInput').val()] : [],
                     Description: $('#descriptionInput').val(),
                     Address: $('#addressInput').val(),
-                    PricePerNight: parseFloat($('#pricePerNightInput').val()) || 0,
+                    City: $('#cityInput').val(),
+                    ListingType: $('#listingTypeInput').val(),
+                    PricePerNight: $('#listingTypeInput').val() === 'rent' ? (parseFloat($('#pricePerNightInput').val()) || 0) : 0,
+                    SalePrice: $('#listingTypeInput').val() === 'sale' && $('#salePriceInput').val() !== '' ? parseFloat($('#salePriceInput').val()) : null,
                     MaxGuests: parseInt($('#capacityInput').val()) || 1,
                     Bedrooms: parseInt($('#bedroomsInput').val()) || 1,
                     Bathrooms: parseInt($('#bathroomsInput').val()) || 1,
@@ -125,8 +137,9 @@
                 };
 
                 $.ajax({
-                    url: window.realEaseApiBaseUrl + 'api/Properties',
+                    url: '@Url.Action("UpdateFromApi", "Properties")',
                     type: 'PUT',
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                     contentType: 'application/json',
                     data: JSON.stringify(updatedProperty),
                     success: function () {
@@ -140,5 +153,10 @@
                 });
             });
         });
+        $('#listingTypeInput').on('change', function () {
+            const isSale = this.value === 'sale';
+            $('#nightlyPriceField').toggleClass('d-none', isSale);
+            $('#salePriceField').toggleClass('d-none', !isSale);
+        }).trigger('change');
     </script>
 }

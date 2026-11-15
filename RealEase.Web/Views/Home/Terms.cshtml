@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Términos y Condiciones";
+}
+
+<div class="container-xl py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-secondary">Inicio</a></li>
+            <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">Términos y Condiciones</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card border-0 rounded-4 p-4 p-md-5 mb-5 bg-white shadow-sm">
+        <div class="max-w-2xl">
+            <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-3">
+                <i class="bi bi-file-earmark-check me-1"></i> Marco Legal y Uso
+            </span>
+            <h1 class="display-5 fw-extrabold text-dark mb-3">Términos y Condiciones del Servicio</h1>
+            <p class="lead text-secondary mb-0">
+                Bienvenido a <strong class="text-success">RealEase</strong>. Al acceder a nuestra plataforma, consultar publicaciones de alquiler o venta, agendar visitas o contactar agentes locales, aceptas cumplir con los términos estipulados a continuación.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Terms Content -->
+        <div class="col-lg-8">
+            <div class="d-grid gap-4">
+                <!-- Section 1 -->
+                <div class="card border-0 rounded-4 p-4 bg-white shadow-sm">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-person-check-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-2">1. Uso de la Plataforma para Clientes e Inquilinos</h5>
+                            <p class="text-secondary small mb-2">
+                                RealEase proporciona un catálogo inmobiliario digital orientado a facilitar la búsqueda, comparación y contacto de propiedades en venta y alquiler en la República Dominicana.
+                            </p>
+                            <ul class="text-secondary small ps-3 mb-0">
+                                <li>El usuario se compromete a suministrar información verídica al agendar visitas o contactar asesores.</li>
+                                <li>Queda prohibido el uso de herramientas automatizadas para la extracción masiva de datos (scraping).</li>
+                                <li>El usuario debe ser mayor de edad para formalizar solicitudes de alquiler o visitas presenciales.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="card border-0 rounded-4 p-4 bg-white shadow-sm">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-building-check"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-2">2. Veracidad de las Publicaciones e Inmuebles</h5>
+                            <p class="text-secondary small mb-0">
+                                RealEase implementa procesos de validación para asegurar que las fotografías, descripciones, tarifas y disponibilidades correspondan fielmente a la realidad del inmueble. Sin embargo, las condiciones finales de contratación de alquiler o compraventa se ratifican con el propietario o agente asignado en el momento de la negociación.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="card border-0 rounded-4 p-4 bg-white shadow-sm">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-2">3. Coordinación y Asistencia a Visitas</h5>
+                            <p class="text-secondary small mb-0">
+                                La solicitud de visitas a través del portal es completamente gratuita para el cliente. En caso de no poder asistir a un recorrido agendado, solicitamos notificar o reprogramar la cita con antelación para respetar el tiempo del agente local y de los actuales residentes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="card border-0 rounded-4 p-4 bg-white shadow-sm">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-2">4. Propiedad Intelectual y Marcas</h5>
+                            <p class="text-secondary small mb-0">
+                                Todo el contenido audiovisual, logotipo de RealEase, interfaces gráficas, código fuente y elementos de diseño son propiedad exclusiva de RealEase Inc. y están protegidos por las leyes vigentes de propiedad intelectual y derechos de autor.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <div class="card border-0 rounded-4 p-4 bg-white shadow-sm sticky-top" style="top: 95px;">
+                <h5 class="fw-bold text-dark mb-3">Transparencia RealEase</h5>
+                <p class="text-secondary small mb-3">
+                    Actualizamos periódicamente nuestros términos para adaptarnos a nuevas leyes y mejorar la experiencia del usuario.
+                </p>
+                <div class="p-3 bg-light rounded-3 border small text-secondary mb-4">
+                    <i class="bi bi-clock-history text-success me-1"></i>
+                    <strong>Última actualización:</strong> Noviembre 2026
+                </div>
+
+                <h6 class="fw-bold text-dark small mb-2">¿Tienes alguna consulta legal?</h6>
+                <p class="text-secondary small mb-3">Nuestro equipo de soporte está disponible para responder cualquier inquietud.</p>
+                <a href="mailto:legal@realease.com" class="btn btn-outline-success rounded-pill btn-sm w-100 fw-bold">
+                    <i class="bi bi-envelope me-1"></i> Contactar al equipo legal
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

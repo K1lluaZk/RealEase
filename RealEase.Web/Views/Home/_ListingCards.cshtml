@@ -1,0 +1,94 @@
+@model IEnumerable<RealEase.Application.Dtos.Property.PropertyDto>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var property in Model)
+    {
+        var isSale = string.Equals(property.ListingType, "sale", StringComparison.OrdinalIgnoreCase);
+        var price = isSale ? property.SalePrice : property.PricePerNight;
+        var displayImage = PropertyImageHelper.GetImageUrl(property.Images?.FirstOrDefault(), property.Id, property.PropertyType);
+
+        <div class="col">
+            <article class="card h-100 property-card border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="property-img-wrapper position-relative">
+                    <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="d-block overflow-hidden">
+                        <img src="@displayImage" alt="@property.Title" class="property-thumb-img w-100 object-fit-cover" loading="lazy" />
+                    </a>
+
+                    <!-- Status Badges -->
+                    <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                        <span class="badge @(isSale ? "bg-primary" : "bg-success") px-3 py-2 rounded-pill fw-bold shadow-sm">
+                            <i class="bi @(isSale ? "bi-house" : "bi-key") me-1"></i> @(isSale ? "En Venta" : "En Alquiler")
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(property.PropertyType))
+                        {
+                            <span class="badge bg-dark bg-opacity-75 backdrop-blur px-2.5 py-2 rounded-pill fw-medium text-white shadow-sm">
+                                @property.PropertyType
+                            </span>
+                        }
+                    </div>
+
+                    <!-- Favorite Button -->
+                    <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 property-fav-btn" title="Guardar en favoritos" onclick="this.classList.toggle('active'); event.stopPropagation();">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Price -->
+                        <div class="d-flex align-items-baseline gap-2 mb-2">
+                            <h4 class="property-price fw-extrabold @(isSale ? "text-primary" : "text-success") mb-0">
+                                @(price?.ToString("C0") ?? "Consultar")
+                            </h4>
+                            @if (!isSale && price.HasValue)
+                            {
+                                <span class="text-secondary small fw-medium">/ noche</span>
+                            }
+                        </div>
+
+                        <!-- Title -->
+                        <h5 class="card-title fw-bold text-dark text-truncate mb-1">
+                            <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="text-decoration-none text-dark hover-success">
+                                @property.Title
+                            </a>
+                        </h5>
+
+                        <!-- Location -->
+                        <p class="card-text text-secondary small d-flex align-items-center gap-1 mb-3 text-truncate">
+                            <i class="bi bi-geo-alt @(isSale ? "text-primary" : "text-success")"></i>
+                            @(string.IsNullOrWhiteSpace(property.City) ? "República Dominicana" : property.City)
+                            @if (!string.IsNullOrWhiteSpace(property.Address))
+                            {
+                                <span>· @property.Address</span>
+                            }
+                        </p>
+                    </div>
+
+                    <!-- Specs Bar -->
+                    <div class="property-specs-bar pt-3 border-top d-flex align-items-center justify-content-between text-secondary small">
+                        <span class="d-flex align-items-center gap-1.5" title="Habitaciones">
+                            <i class="bi bi-door-closed text-dark fs-6"></i>
+                            <strong class="text-dark">@(property.Bedrooms ?? 1)</strong> hab
+                        </span>
+                        <span class="text-secondary opacity-50">|</span>
+                        <span class="d-flex align-items-center gap-1.5" title="Baños">
+                            <i class="bi bi-droplet text-dark fs-6"></i>
+                            <strong class="text-dark">@(property.Bathrooms ?? 1)</strong> baños
+                        </span>
+                        <span class="text-secondary opacity-50">|</span>
+                        <span class="d-flex align-items-center gap-1.5" title="Huéspedes / Capacidad">
+                            <i class="bi bi-people text-dark fs-6"></i>
+                            <strong class="text-dark">@(property.MaxGuests ?? 2)</strong> pers
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 px-4 pb-4 pt-0">
+                    <a asp-controller="Properties" asp-action="Details" asp-route-id="@property.Id" class="btn btn-outline-dark btn-sm w-100 rounded-pill fw-semibold py-2">
+                        Ver detalles completos <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </article>
+        </div>
+    }
+</div>
