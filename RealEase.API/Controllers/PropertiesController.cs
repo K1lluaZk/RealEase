@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using RealEase.Application.Dtos.Property;
 using RealEase.Application.Services;
+using RealEase.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 namespace RealEase.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class PropertiesController : ControllerBase
     {
@@ -19,6 +22,7 @@ namespace RealEase.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<PropertyDto>>> GetAll()
         {
             var properties = await _propertyService.GetAllPropertiesAsync();
@@ -26,6 +30,7 @@ namespace RealEase.API.Controllers
         }
 
         [HttpGet("{id:long}")]
+        [AllowAnonymous]
         public async Task<ActionResult<PropertyDto>> GetById(long id)
         {
             var property = await _propertyService.GetPropertyByIdAsync(id);
@@ -34,6 +39,7 @@ namespace RealEase.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult<long>> Create([FromBody] PropertyDto dto)
         {
             var propertyId = await _propertyService.AddPropertyAsync(dto);
@@ -43,6 +49,7 @@ namespace RealEase.API.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Update([FromBody] PropertyDto dto)
         {
             var result = await _propertyService.UpdatePropertyAsync(dto);
@@ -51,6 +58,7 @@ namespace RealEase.API.Controllers
         }
 
         [HttpDelete("{id:long}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(long id)
         {
             var result = await _propertyService.DeletePropertyAsync(id);
@@ -59,6 +67,7 @@ namespace RealEase.API.Controllers
         }
 
         [HttpGet("filter")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<PropertyDto>>> GetFiltered(
             [FromQuery] string? address,
             [FromQuery] string? type,

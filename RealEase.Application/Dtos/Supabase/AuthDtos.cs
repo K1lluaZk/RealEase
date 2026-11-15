@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using RealEase.Domain.Models.Supabase;
 
 namespace RealEase.Application.Dtos.Supabase
@@ -14,7 +15,11 @@ namespace RealEase.Application.Dtos.Supabase
 
     public class LoginUserRequest
     {
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
+
+        [Required]
         public string Password { get; set; } = string.Empty;
     }
 

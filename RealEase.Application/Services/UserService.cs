@@ -34,6 +34,7 @@ namespace RealEase.Application.Services
                     LastName = user.LastName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
+                    ServiceArea = user.ServiceArea,
                     Role = user.Role,
                     IsActive = user.IsActive,
                     CreatedAt = user.CreatedAt
@@ -55,6 +56,7 @@ namespace RealEase.Application.Services
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                ServiceArea = user.ServiceArea,
                 Role = user.Role,
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt
@@ -78,6 +80,7 @@ namespace RealEase.Application.Services
                     LastName = dto.LastName,
                     Email = dto.Email,
                     PhoneNumber = dto.PhoneNumber,
+                    ServiceArea = dto.ServiceArea,
                     Role = dto.Role,
                     IsActive = dto.IsActive,
                     CreatedAt = DateTime.UtcNow
@@ -112,6 +115,7 @@ namespace RealEase.Application.Services
                 user.LastName = dto.LastName;
                 user.Email = dto.Email;
                 user.PhoneNumber = dto.PhoneNumber;
+                user.ServiceArea = dto.ServiceArea;
                 user.Role = dto.Role;
                 user.IsActive = dto.IsActive;
 
@@ -181,6 +185,7 @@ namespace RealEase.Application.Services
                 LastName = u.LastName,
                 Email = u.Email,
                 PhoneNumber = u.PhoneNumber,
+                ServiceArea = u.ServiceArea,
                 Role = u.Role,
                 IsActive = u.IsActive,
                 CreatedAt = u.CreatedAt

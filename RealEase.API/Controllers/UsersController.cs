@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using RealEase.Application.Dtos.User;
 using RealEase.Application.Services;
+using RealEase.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 namespace RealEase.WebAPI.Controllers
 {
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
@@ -38,6 +41,11 @@ namespace RealEase.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] UserDto dto)
         {
+            var role = UserRoles.Normalize(dto.Role);
+            if (role is null)
+                return BadRequest("El rol debe ser cliente, agente o admin.");
+            dto.Role = UserRoles.ToStorageRole(role);
+
             var userId = await _userService.AddUserAsync(dto);
             if (userId == Guid.Empty) return BadRequest("No se pudo crear el usuario.");
 
@@ -47,6 +55,11 @@ namespace RealEase.WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] UserDto dto)
         {
+            var role = UserRoles.Normalize(dto.Role);
+            if (role is null)
+                return BadRequest("El rol debe ser cliente, agente o admin.");
+            dto.Role = UserRoles.ToStorageRole(role);
+
             var result = await _userService.UpdateUserAsync(dto);
             if (!result) return NotFound($"No se pudo actualizar. Usuario no encontrado.");
 

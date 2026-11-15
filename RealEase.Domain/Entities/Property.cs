@@ -10,7 +10,10 @@ public class Property
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string Address { get; set; } = string.Empty;
+    public string? City { get; set; }
+    public string ListingType { get; set; } = "rent";
     public decimal PricePerNight { get; set; }
+    public decimal? SalePrice { get; set; }
     public string PropertyType { get; set; } = string.Empty;
     public string? Status { get; set; }
     public Guid? OwnerId { get; set; }

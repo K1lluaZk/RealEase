@@ -1,4 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Npgsql;
+using RealEase.API.Authentication;
 using Supabase;
 using RealEase.Infrastructure.Core;
 using RealEase.Infrastructure.Repositories;
@@ -18,6 +22,18 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__DefaultConnection con la cadena PostgreSQL de Supabase.");
 }
 
+try
+{
+    _ = new NpgsqlConnectionStringBuilder(connectionString);
+}
+catch (ArgumentException exception)
+{
+    throw new InvalidOperationException(
+        "ConnectionStrings:DefaultConnection no es una cadena de conexión PostgreSQL válida. " +
+        "Usa el formato Host=...;Port=5432;Database=...;Username=...;Password=...;SSL Mode=Require.",
+        exception);
+}
+
 builder.Services.AddDbContext<RealEaseDbContext>(options =>
     options
         .UseNpgsql(connectionString)
@@ -34,6 +50,13 @@ if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabase
         "Falta Supabase:Url o Supabase:Key. Configura Supabase__Url y Supabase__Key " +
         "con la URL del proyecto y una clave anon/publishable.");
 }
+
+builder.Services.AddHttpClient("SupabaseAuth", client =>
+{
+    client.BaseAddress = new Uri($"{supabaseUrl.TrimEnd('/')}/");
+    client.DefaultRequestHeaders.Add("apikey", supabaseKey);
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 
 builder.Services.AddScoped<Supabase.Client>(_ =>
     new Supabase.Client(supabaseUrl, supabaseKey, new SupabaseOptions
@@ -78,6 +101,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PropertyService>();
+builder.Services.AddScoped<AgentInquiryService>();
 builder.Services.AddScoped<ContractService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<VisitService>();
@@ -88,6 +112,15 @@ builder.Services.AddScoped<VisitService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services
+    .AddAuthentication("SupabaseBearer")
+    .AddScheme<AuthenticationSchemeOptions, SupabaseBearerHandler>("SupabaseBearer", _ => { });
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var app = builder.Build();
 
@@ -104,6 +137,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(myAllowSpecificOrigins);
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

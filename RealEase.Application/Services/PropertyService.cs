@@ -38,7 +38,10 @@ namespace RealEase.Application.Services
                     Title = dto.Title,
                     Description = dto.Description,
                     Address = dto.Address,
+                    City = dto.City,
+                    ListingType = dto.ListingType,
                     PricePerNight = dto.PricePerNight,
+                    SalePrice = dto.SalePrice,
                     PropertyType = dto.PropertyType,
                     Status = dto.Status,
                     OwnerId = dto.OwnerId,
@@ -77,7 +80,10 @@ namespace RealEase.Application.Services
                 property.Title = dto.Title;
                 property.Description = dto.Description;
                 property.Address = dto.Address;
+                property.City = dto.City;
+                property.ListingType = dto.ListingType;
                 property.PricePerNight = dto.PricePerNight;
+                property.SalePrice = dto.SalePrice;
                 property.PropertyType = dto.PropertyType;
                 property.Status = dto.Status;
                 property.OwnerId = dto.OwnerId;
@@ -136,7 +142,10 @@ namespace RealEase.Application.Services
             Title = property.Title,
             Description = property.Description,
             Address = property.Address,
+            City = property.City,
+            ListingType = property.ListingType,
             PricePerNight = property.PricePerNight,
+            SalePrice = property.SalePrice,
             PropertyType = property.PropertyType,
             Status = property.Status,
             OwnerId = property.OwnerId,
