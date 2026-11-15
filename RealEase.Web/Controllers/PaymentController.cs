@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using RealEase.Web.Services;
 using RealEase.Application.Dtos.Payment;
+using RealEase.Domain.Models;
 
 namespace RealEase.Web.Controllers
 {
+    [Authorize]
     public class PaymentsController : Controller
     {
         private readonly RealEaseApiClient _api;
@@ -15,6 +18,7 @@ namespace RealEase.Web.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Agent + "," + UserRoles.Client)]
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             try
@@ -29,6 +33,7 @@ namespace RealEase.Web.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFromApi(long id, CancellationToken cancellationToken)
@@ -47,18 +52,55 @@ namespace RealEase.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateFromApi([FromBody] PaymentDto dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _api.PostAsync<PaymentDto, long>("api/Payments", dto, cancellationToken);
+                return Ok();
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogWarning(exception, "No se pudo registrar el pago mediante la API.");
+                return StatusCode((int)(exception.StatusCode ?? System.Net.HttpStatusCode.BadGateway));
+            }
+        }
+
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateFromApi([FromBody] PaymentDto dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _api.PutAsync("api/Payments", dto, cancellationToken);
+                return NoContent();
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogWarning(exception, "No se pudo actualizar el pago {PaymentId} mediante la API.", dto.Id);
+                return StatusCode((int)(exception.StatusCode ?? System.Net.HttpStatusCode.BadGateway));
+            }
+        }
+
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Agent + "," + UserRoles.Client)]
         public async Task<IActionResult> Details(long id, CancellationToken cancellationToken)
         {
             var dto = await _api.GetPaymentAsync(id, cancellationToken);
             return dto == null ? NotFound() : View(ToEntity(dto));
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Edit(long id, CancellationToken cancellationToken)
         {
@@ -66,6 +108,7 @@ namespace RealEase.Web.Controllers
             return dto == null ? NotFound() : View(ToEntity(dto));
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {

@@ -8,10 +8,10 @@ namespace RealEase.Web.Services;
 
 public sealed class RealEaseApiClient(HttpClient httpClient)
 {
-    public Task<PropertyDto?> GetPropertyAsync(long id, CancellationToken cancellationToken = default) => GetAsync<PropertyDto>($"api/Properties/{id}", cancellationToken);
-    public Task<VisitDto?> GetVisitAsync(long id, CancellationToken cancellationToken = default) => GetAsync<VisitDto>($"api/Visits/{id}", cancellationToken);
-    public Task<ContractDto?> GetContractAsync(long id, CancellationToken cancellationToken = default) => GetAsync<ContractDto>($"api/Contracts/{id}", cancellationToken);
-    public Task<PaymentDto?> GetPaymentAsync(long id, CancellationToken cancellationToken = default) => GetAsync<PaymentDto>($"api/Payments/{id}", cancellationToken);
+    public Task<PropertyDto?> GetPropertyAsync(long id, CancellationToken cancellationToken = default) => GetOptionalAsync<PropertyDto>($"api/Properties/{id}", cancellationToken);
+    public Task<VisitDto?> GetVisitAsync(long id, CancellationToken cancellationToken = default) => GetOptionalAsync<VisitDto>($"api/Visits/{id}", cancellationToken);
+    public Task<ContractDto?> GetContractAsync(long id, CancellationToken cancellationToken = default) => GetOptionalAsync<ContractDto>($"api/Contracts/{id}", cancellationToken);
+    public Task<PaymentDto?> GetPaymentAsync(long id, CancellationToken cancellationToken = default) => GetOptionalAsync<PaymentDto>($"api/Payments/{id}", cancellationToken);
 
     public async Task<List<PropertyDto>> GetPropertiesAsync(CancellationToken cancellationToken = default) =>
         await httpClient.GetFromJsonAsync<List<PropertyDto>>("api/Properties", cancellationToken) ?? [];
@@ -31,7 +31,46 @@ public sealed class RealEaseApiClient(HttpClient httpClient)
         response.EnsureSuccessStatusCode();
     }
 
-    private async Task<T?> GetAsync<T>(string endpoint, CancellationToken cancellationToken)
+    public async Task<TResponse> PostAsync<TRequest, TResponse>(
+        string endpoint,
+        TRequest value,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await httpClient.PostAsJsonAsync(endpoint, value, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<TResponse>(cancellationToken: cancellationToken)
+            ?? throw new InvalidOperationException("The API returned an empty response.");
+    }
+
+    public async Task PutAsync<TRequest>(
+        string endpoint,
+        TRequest value,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await httpClient.PutAsJsonAsync(endpoint, value, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task PostAsync<TRequest>(
+        string endpoint,
+        TRequest value,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await httpClient.PostAsJsonAsync(endpoint, value, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<TResponse> GetAsync<TResponse>(
+        string endpoint,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await httpClient.GetAsync(endpoint, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<TResponse>(cancellationToken: cancellationToken)
+            ?? throw new InvalidOperationException("The API returned an empty response.");
+    }
+
+    private async Task<T?> GetOptionalAsync<T>(string endpoint, CancellationToken cancellationToken)
     {
         using var response = await httpClient.GetAsync(endpoint, cancellationToken);
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)

@@ -1,0 +1,32 @@
+@model RealEase.Web.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<section class="account-page">
+    <div class="account-card card border-0">
+        <div class="account-heading">
+            <span class="edit-page-icon"><i class="bi bi-house-heart"></i></span>
+            <span class="eyebrow">Bienvenido a RealEase</span>
+            <h1>Inicia sesión</h1>
+            <p>Accede a tu espacio para continuar.</p>
+        </div>
+
+        <form asp-action="Login" method="post" class="d-grid gap-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input asp-for="ReturnUrl" type="hidden" />
+            <div>
+                <label asp-for="Email" class="form-label">Correo electrónico</label>
+                <input asp-for="Email" class="form-control" autocomplete="username" autofocus />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div>
+                <label asp-for="Password" class="form-label">Contraseña</label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-realease"><i class="bi bi-box-arrow-in-right"></i> Entrar</button>
+        </form>
+    </div>
+</section>
