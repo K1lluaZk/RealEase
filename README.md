@@ -42,6 +42,24 @@ RealEase is a comprehensive real estate management platform that simplifies the 
 
 The API follows RESTful principles and uses DTOs (Data Transfer Objects) for communication.
 
+## Authentication and roles
+
+Sign-in uses the existing Supabase Auth account. The Web app keeps the session in a protected, HttpOnly cookie and forwards the access token server-to-server; the API validates the token with Supabase and checks the matching active user profile before authorizing a request.
+
+The application maps the existing stored roles to its access roles without changing the database enum:
+
+- `guest` → `client`: browse properties, schedule visits, and view their own visits, contracts, and payments.
+- `host` → `agent`: manage visits for properties they own and contracts assigned to them; agents cannot delete contracts or change contract approval status.
+- `administrator` → `admin`: manage all records and assign supported roles.
+
+Accounts must already exist in Supabase Auth and have a matching active user profile. Provision the first administrator through a trusted administrative process; the public login does not create accounts or grant roles. Contract approval remains restricted until a trusted payment-verification flow is implemented.
+
+Both `RealEase.Web` and `RealEase.API` require `ConnectionStrings:DefaultConnection`. Configure it as the `ConnectionStrings__DefaultConnection` environment variable with a PostgreSQL key/value connection string for Supabase, for example `Host=<host>;Port=5432;Database=<database>;Username=<user>;Password=<password>;SSL Mode=Require`. Do not use a `postgres://` URL or commit credentials to `appsettings.json`.
+
+### Public property browsing
+
+The customer pages separate properties for sale from rentals. Apply the additive marketplace migration in `sql/20261114_customer_marketplace.sql` (or the matching EF Core migration) before deploying the updated API and Web app. Existing properties default to rentals to preserve their current behavior. Set `listing_type` to `sale` and provide `sale_price` for sale listings; add each listing's city. For location-based seller inquiries, set each agent's `service_area` to one or more comma-separated city/area names that match the location entered by customers. Rental inquiries are routed to the agent assigned as the property's owner when that user has the agent role.
+
 ## Endpoints
 
 GET /api/users
