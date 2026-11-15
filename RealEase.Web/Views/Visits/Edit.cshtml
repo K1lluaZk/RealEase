@@ -5,55 +5,49 @@
     ViewData["Title"] = "Editar Visita";
 }
 
-<h1 class="text-center text-success">Editar Visita</h1>
-<hr />
+<section class="edit-page edit-page--visit">
+    <div class="page-heading edit-page-heading">
+        <div class="edit-page-title">
+            <span class="edit-page-icon"><i class="bi bi-calendar2-heart"></i></span>
+            <div><span class="eyebrow">Visitas · #@Model.Id</span><h1>Editar visita</h1><p>Actualiza la cita y los detalles para el recorrido.</p></div>
+        </div>
+        <a href="/Visits" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a visitas</a>
+    </div>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm rounded-3">
-                <div class="card-body">
-                    <h4 class="card-title text-secondary">Detalles de la Visita</h4>
-                    <form asp-action="Edit" id="editVisitForm">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form asp-action="Edit" id="editVisitForm" class="form-surface card border-0">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-surface-heading"><span class="detail-icon"><i class="bi bi-pencil-square"></i></span><div><h2>Detalles de la visita</h2><p>Organiza el horario y mantén la información de contacto al día.</p></div></div>
 
-                        <input type="hidden" asp-for="Id" />
-
-                        <div class="form-group mb-3">
-                            <label asp-for="PropertyId" class="form-label">ID Propiedad</label>
-                            <input type="number" step="1" class="form-control" id="propertyIdInput" name="PropertyId" value="@Model.PropertyId" required />
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="UserId" class="form-label">ID Usuario</label>
-                            <input type="text" class="form-control" id="userIdInput" name="UserId" value="@Model.UserId" required />
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="VisitDate" class="form-label">Fecha de Visita</label>
-                            <input type="datetime-local" class="form-control" id="visitDateInput" name="VisitDate" value="@Model.VisitDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required />
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Status" class="form-label">Estado</label>
-                            <input class="form-control" id="statusInput" name="Status" value="@Model.Status" placeholder="Ej. Disponible" required />
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Notes" class="form-label">Notas</label>
-                            <input class="form-control" id="notesInput" name="Notes" value="@Model.Notes" />
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" id="UpdateVisitButton" class="btn btn-primary">Guardar</button>
-                            <a href="/Visits" class="btn btn-secondary">Cancelar</a>
-                        </div>
-                    </form>
-                </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="PropertyId" class="form-label">ID de la propiedad</label>
+                <input type="number" step="1" class="form-control" id="propertyIdInput" name="PropertyId" value="@Model.PropertyId" required />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="UserId" class="form-label">ID del usuario</label>
+                <input type="text" class="form-control" id="userIdInput" name="UserId" value="@Model.UserId" required />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="VisitDate" class="form-label">Fecha y hora de la visita</label>
+                <input type="datetime-local" class="form-control" id="visitDateInput" name="VisitDate" value="@Model.VisitDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Status" class="form-label">Estado</label>
+                <input class="form-control" id="statusInput" name="Status" value="@Model.Status" placeholder="Ej. Programada" required />
+            </div>
+            <div class="col-12">
+                <label asp-for="Notes" class="form-label">Notas <span class="text-secondary">(opcional)</span></label>
+                <textarea class="form-control" id="notesInput" name="Notes" rows="3">@Model.Notes</textarea>
             </div>
         </div>
-    </div>
-</div>
+
+        <div class="form-surface-actions">
+            <a href="/Visits" class="btn btn-light">Cancelar</a>
+            <button type="submit" id="UpdateVisitButton" class="btn btn-realease"><i class="bi bi-check2-circle"></i> Guardar cambios</button>
+        </div>
+    </form>
+</section>
 
 
 @section Scripts
@@ -78,8 +72,9 @@
                 };
 
                 $.ajax({
-                    url: window.realEaseApiBaseUrl + 'api/Visits',
+                    url: '@Url.Action("UpdateFromApi", "Visits")',
                     type: 'PUT',
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                     contentType: 'application/json',
                     data: JSON.stringify(updatedVisit),
                     success: function () {
@@ -95,5 +90,3 @@
         });
     </script>
 }
-
-

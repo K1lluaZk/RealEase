@@ -2,111 +2,400 @@
 @model Contract
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nuevo Contrato";
 }
 
-<h1 class="text-center text-success mb-4">Crear Contrato</h1>
-<h4 class="text-center text-secondary">Por favor ingrese los datos del contrato</h4>
-<hr />
+<style>
+    .re-create-hero {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-bottom: 1px solid #d1fae5;
+        padding: 2.5rem 0 2rem;
+    }
+    .form-floating-custom label {
+        color: #6b7280;
+        font-size: .85rem;
+    }
+    .input-icon-wrap {
+        position: relative;
+    }
+    .input-icon-wrap .bi {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #059669;
+        font-size: 1rem;
+        pointer-events: none;
+        z-index: 5;
+    }
+    .input-icon-wrap .form-control,
+    .input-icon-wrap .form-select {
+        padding-left: 2.5rem;
+    }
+    .tip-card {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+    }
+    .tip-card .tip-item {
+        display: flex;
+        gap: .75rem;
+        align-items: flex-start;
+        margin-bottom: .9rem;
+    }
+    .tip-card .tip-item:last-child { margin-bottom: 0; }
+    .tip-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        background: #059669;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: .85rem;
+    }
+    .section-divider {
+        border: none;
+        border-top: 1px dashed #d1fae5;
+        margin: 1.5rem 0;
+    }
+</style>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form asp-action="Create" class="shadow-sm p-4 bg-light rounded-3">
-
-            <div class="form-group row mb-3">
-                <label for="clientIdInput" class="col-md-4 col-form-label text-md-right text-primary">ClientId</label>
-                <div class="col-md-8">
-                    <input type="text" class="form-control" id="clientIdInput" placeholder="UUID del cliente" required />
-                </div>
+<div class="re-create-hero">
+    <div class="container-xl">
+        <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Agent" asp-action="Dashboard" class="text-success text-decoration-none">
+                        <i class="bi bi-speedometer2 me-1"></i>Panel de Agente
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Contracts" asp-action="Index" class="text-success text-decoration-none">Contratos</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Nuevo contrato</li>
+            </ol>
+        </nav>
+        <div class="d-flex align-items-center gap-3">
+            <div style="width:52px;height:52px;background:#059669;border-radius:14px;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-file-earmark-plus-fill text-white fs-4"></i>
             </div>
-
-            <div class="form-group row mb-3">
-                <label for="agentIdInput" class="col-md-4 col-form-label text-md-right text-primary">AgentId</label>
-                <div class="col-md-8">
-                    <input type="text" class="form-control" id="agentIdInput" placeholder="UUID del agente (opcional)" />
-                </div>
+            <div>
+                <h1 class="h3 fw-bold text-dark mb-0">Crear Nuevo Contrato</h1>
+                <p class="text-secondary small mb-0">Complete todos los campos para registrar el contrato inmobiliario</p>
             </div>
-
-            <div class="form-group row mb-3">
-                <label for="propertyIdInput" class="col-md-4 col-form-label text-md-right text-primary">PropertyId</label>
-                <div class="col-md-8">
-                    <input type="number" min="1" step="1" class="form-control" id="propertyIdInput" required />
-                </div>
-            </div>
-
-            <div class="form-group row mb-3">
-                <label for="startDateInput" class="col-md-4 col-form-label text-md-right text-primary">Fecha de Inicio</label>
-                <div class="col-md-8">
-                    <input type="date" class="form-control" id="startDateInput" required />
-                </div>
-            </div>
-
-            <div class="form-group row mb-3">
-                <label for="endDateInput" class="col-md-4 col-form-label text-md-right text-primary">Fecha de Fin</label>
-                <div class="col-md-8">
-                    <input type="date" class="form-control" id="endDateInput" required />
-                </div>
-            </div>
-
-            <div class="form-group row mb-3">
-                <label for="monthlyAmountInput" class="col-md-4 col-form-label text-md-right text-primary">Monto Total</label>
-                <div class="col-md-8">
-                    <input type="number" min="0" step="0.01" class="form-control" id="monthlyAmountInput" placeholder="Ej. 1000" required />
-                </div>
-            </div>
-
-            <div class="form-group row mb-3">
-                <label for="statusInput" class="col-md-4 col-form-label text-md-right text-primary">Estado</label>
-                <div class="col-md-8">
-                    <input class="form-control" id="statusInput" list="status" placeholder="Ej. Disponible" />
-                    <datalist id="status">
-                        <option value="Pendiente" />
-                        <option value="Disponible" />
-                        <option value="Vendido" />
-                    </datalist>
-                </div>
-            </div>
-
-            <div class="form-group text-center">
-                <button type="submit" id="addContractButton" class="btn btn-success btn-lg">Guardar</button>
-                <a href="/Contracts" class="btn btn-secondary btn-lg">Cancelar</a>
-            </div>
-
-        </form>
+        </div>
     </div>
 </div>
 
+<div class="container-xl py-5">
+    <div class="row g-4">
 
+        {{!-- LEFT: Form --}}
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom border-light py-3 px-4">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-pencil-square text-success me-2"></i>Datos del Contrato
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" id="contractForm">
 
+                        {{!-- Section: Partes involucradas --}}
+                        <p class="text-uppercase small fw-bold text-secondary tracking-wide mb-3" style="letter-spacing:.05em;">
+                            <i class="bi bi-people-fill text-success me-1"></i> Partes Involucradas
+                        </p>
+
+                        <div class="row g-3 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-dark">
+                                    <i class="bi bi-person-fill text-success me-1"></i>ID del Cliente <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-icon-wrap">
+                                    <i class="bi bi-person"></i>
+                                    <input type="text"
+                                           class="form-control rounded-3 bg-light border-0"
+                                           id="clientIdInput"
+                                           placeholder="UUID del cliente"
+                                           required />
+                                </div>
+                                <div class="form-text text-muted">Identificador único del cliente (GUID)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-dark">
+                                    <i class="bi bi-briefcase-fill text-success me-1"></i>ID del Agente
+                                </label>
+                                <div class="input-icon-wrap">
+                                    <i class="bi bi-briefcase"></i>
+                                    <input type="text"
+                                           class="form-control rounded-3 bg-light border-0"
+                                           id="agentIdInput"
+                                           placeholder="UUID del agente (opcional)" />
+                                </div>
+                                <div class="form-text text-muted">Dejar vacío si no hay agente asignado</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-dark">
+                                <i class="bi bi-building text-success me-1"></i>ID de la Propiedad <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-building"></i>
+                                <input type="number"
+                                       min="1"
+                                       step="1"
+                                       class="form-control rounded-3 bg-light border-0"
+                                       id="propertyIdInput"
+                                       placeholder="Ej. 42"
+                                       required />
+                            </div>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        {{!-- Section: Vigencia --}}
+                        <p class="text-uppercase small fw-bold text-secondary mb-3" style="letter-spacing:.05em;">
+                            <i class="bi bi-calendar3 text-success me-1"></i> Vigencia del Contrato
+                        </p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-dark">
+                                    Fecha de Inicio <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-icon-wrap">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <input type="date"
+                                           class="form-control rounded-3 bg-light border-0"
+                                           id="startDateInput"
+                                           required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-dark">
+                                    Fecha de Fin <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-icon-wrap">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <input type="date"
+                                           class="form-control rounded-3 bg-light border-0"
+                                           id="endDateInput"
+                                           required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        {{!-- Section: Términos financieros --}}
+                        <p class="text-uppercase small fw-bold text-secondary mb-3" style="letter-spacing:.05em;">
+                            <i class="bi bi-currency-dollar text-success me-1"></i> Términos Financieros
+                        </p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-dark">
+                                    Monto Total (RD\$) <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-icon-wrap">
+                                    <i class="bi bi-cash-coin"></i>
+                                    <input type="number"
+                                           min="0"
+                                           step="0.01"
+                                           class="form-control rounded-3 bg-light border-0"
+                                           id="monthlyAmountInput"
+                                           placeholder="Ej. 45,000"
+                                           required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-dark">
+                                    Estado del Contrato <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-icon-wrap">
+                                    <i class="bi bi-patch-check"></i>
+                                    <select class="form-select rounded-3 bg-light border-0" id="statusInput">
+                                        <option value="" disabled selected>Seleccionar estado…</option>
+                                        <option value="Pending">🕐 Pendiente</option>
+                                        <option value="Active">✅ Activo</option>
+                                        <option value="Signed">✍️ Firmado</option>
+                                        <option value="Cancelled">❌ Cancelado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{!-- Summary preview --}}
+                        <div class="alert border-0 rounded-3 d-none" id="contractPreview" style="background:#f0fdf4;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-eye-fill text-success"></i>
+                                <span class="fw-semibold text-dark small">Vista previa del contrato</span>
+                            </div>
+                            <div class="row g-2 small text-secondary" id="previewContent"></div>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-4">
+                            <button type="submit" id="addContractButton"
+                                    class="btn btn-success rounded-3 px-5 fw-semibold d-flex align-items-center gap-2">
+                                <i class="bi bi-check2-circle"></i> Guardar Contrato
+                            </button>
+                            <a href="/Contracts" class="btn btn-light rounded-3 px-4 fw-semibold text-secondary">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{!-- RIGHT: Tips sidebar --}}
+        <div class="col-lg-4">
+            <div class="tip-card mb-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="tip-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                    <span class="fw-bold text-dark">Consejos rápidos</span>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon" style="background:#0ea5e9;"><i class="bi bi-person-check"></i></div>
+                    <div>
+                        <div class="fw-semibold text-dark small">Verifica la identidad</div>
+                        <div class="text-secondary" style="font-size:.8rem;">Asegúrate de que el UUID del cliente sea correcto antes de guardar.</div>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon" style="background:#8b5cf6;"><i class="bi bi-calendar2-range"></i></div>
+                    <div>
+                        <div class="fw-semibold text-dark small">Revisa las fechas</div>
+                        <div class="text-secondary" style="font-size:.8rem;">La fecha de fin debe ser posterior a la de inicio del contrato.</div>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon" style="background:#f59e0b;"><i class="bi bi-cash-stack"></i></div>
+                    <div>
+                        <div class="fw-semibold text-dark small">Monto en RD\$</div>
+                        <div class="text-secondary" style="font-size:.8rem;">Registra el monto total pactado, incluyendo todos los períodos.</div>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="bi bi-patch-check-fill"></i></div>
+                    <div>
+                        <div class="fw-semibold text-dark small">Estado inicial</div>
+                        <div class="text-secondary" style="font-size:.8rem;">Los contratos nuevos usualmente inician en estado "Pendiente".</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
+                <div class="card-body p-0">
+                    <img src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=400&h=200&fit=crop&auto=format"
+                         alt="Firma de contrato"
+                         class="img-fluid w-100"
+                         style="object-fit:cover;height:150px;" />
+                    <div class="p-3">
+                        <p class="small text-secondary mb-2">
+                            <i class="bi bi-shield-fill-check text-success me-1"></i>
+                            Todos los contratos se almacenan de forma segura y encriptada.
+                        </p>
+                        <a asp-controller="Contracts" asp-action="Index" class="btn btn-light btn-sm rounded-pill w-100 fw-semibold">
+                            <i class="bi bi-list-ul me-1"></i> Ver todos los contratos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 rounded-4 shadow-sm mt-3 p-3 d-flex flex-row align-items-center gap-3">
+                <div style="width:40px;height:40px;background:#fef3c7;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-info-circle-fill text-warning"></i>
+                </div>
+                <div>
+                    <div class="small fw-semibold text-dark">¿Necesitas ayuda?</div>
+                    <a href="mailto:soporte@realease.com" class="small text-success text-decoration-none">soporte@realease.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('#addContractButton').click(function (e) {
-                e.preventDefault();
-                var newContract = {
-                    ClientId: $('#clientIdInput').val(),
-                    AgentId: $('#agentIdInput').val() || null,
-                    PropertyId: Number($('#propertyIdInput').val()),
-                    StartDate: $('#startDateInput').val(),
-                    EndDate: $('#endDateInput').val(),
-                    TotalAmount: Number($('#monthlyAmountInput').val()),
-                    Status: $('#statusInput').val()
-                };
-                $.ajax({
-                    url: window.realEaseApiBaseUrl + 'api/Contracts',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(newContract),
-                    success: function (data) {
-                        window.location.href = '/Contracts';
-                    },
-                    error: function (error) {
-                        console.log('Error:', error);
-                    }
-                });
+        // Live preview
+        const previewFields = ['clientIdInput', 'propertyIdInput', 'startDateInput', 'endDateInput', 'monthlyAmountInput', 'statusInput'];
+        previewFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', updatePreview);
+        });
+
+        function updatePreview() {
+            const clientId = document.getElementById('clientIdInput').value;
+            const propId   = document.getElementById('propertyIdInput').value;
+            const start    = document.getElementById('startDateInput').value;
+            const end      = document.getElementById('endDateInput').value;
+            const amount   = document.getElementById('monthlyAmountInput').value;
+            const status   = document.getElementById('statusInput').value;
+
+            const hasData = clientId || propId || start || end || amount || status;
+            const previewEl = document.getElementById('contractPreview');
+            if (!hasData) { previewEl.classList.add('d-none'); return; }
+            previewEl.classList.remove('d-none');
+
+            const fmt = (val, placeholder) => val ? `<strong class="text-dark">${val}</strong>` : `<span class="text-muted fst-italic">${placeholder}</span>`;
+            const fmtAmt = (val) => val ? `<strong class="text-success">RD\$${Number(val).toLocaleString('es-DO')}</strong>` : `<span class="text-muted fst-italic">—</span>`;
+
+            document.getElementById('previewContent').innerHTML = `
+                <div class="col-6"><span class="text-muted">Cliente:</span> ${fmt(clientId.substring(0,8) + (clientId.length > 8 ? '…' : ''), '—')}</div>
+                <div class="col-6"><span class="text-muted">Propiedad:</span> ${fmt(propId, '—')}</div>
+                <div class="col-6"><span class="text-muted">Inicio:</span> ${fmt(start, '—')}</div>
+                <div class="col-6"><span class="text-muted">Fin:</span> ${fmt(end, '—')}</div>
+                <div class="col-6"><span class="text-muted">Monto:</span> ${fmtAmt(amount)}</div>
+                <div class="col-6"><span class="text-muted">Estado:</span> ${fmt(status, '—')}</div>
+            `;
+        }
+
+        document.getElementById('addContractButton').addEventListener('click', function (e) {
+            e.preventDefault();
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando…';
+
+            const newContract = {
+                ClientId:    document.getElementById('clientIdInput').value,
+                AgentId:     document.getElementById('agentIdInput').value || null,
+                PropertyId:  Number(document.getElementById('propertyIdInput').value),
+                StartDate:   document.getElementById('startDateInput').value,
+                EndDate:     document.getElementById('endDateInput').value,
+                TotalAmount: Number(document.getElementById('monthlyAmountInput').value),
+                Status:      document.getElementById('statusInput').value
+            };
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            fetch('@Url.Action("CreateFromApi", "Contracts")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify(newContract)
+            })
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = '/Contracts';
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Contrato';
+                alert('Ocurrió un error al guardar el contrato. Por favor intente de nuevo.');
             });
         });
     </script>
-
 }

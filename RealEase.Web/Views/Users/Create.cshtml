@@ -13,6 +13,7 @@
 
     <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
         <form asp-action="Create" id="createUserForm" class="space-y-6">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
 
             <div>
@@ -51,14 +52,18 @@
 
             <div>
                 <label asp-for="Role" class="block text-sm font-medium text-gray-700 mb-1">Rol Asignado</label>
-                <input asp-for="Role" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="roleInput" list="roles" placeholder="Selecciona o escribe un rol..." />
-                <datalist id="roles">
-                    <option value="Administrador" />
-                    <option value="Agente de ventas" />
-                    <option value="Dueño" />
-                    <option value="Cliente" />
-                </datalist>
+                <select asp-for="Role" class="form-select" id="roleInput" required>
+                    <option value="client">Cliente</option>
+                    <option value="agent">Agente</option>
+                    <option value="admin">Administrador</option>
+                </select>
                 <span asp-validation-for="Role" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="ServiceArea" class="block text-sm font-medium text-gray-700 mb-1">Zonas que atiende</label>
+                <input asp-for="ServiceArea" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm" id="serviceAreaInput" placeholder="Ej. Santo Domingo, Santiago" />
+                <p class="text-xs text-gray-500 mt-1">Solo para agentes. Separa las ciudades o zonas con comas para asignar solicitudes de venta.</p>
             </div>
 
             <div class="flex items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -95,13 +100,15 @@
                     LastName: $('#lastNameInput').val(),
                     Email: $('#emailInput').val(),
                     PhoneNumber: $('#phoneNumberInput').val(),
+                    ServiceArea: $('#serviceAreaInput').val(),
                     Role: $('#roleInput').val(),
                     IsActive: $('#isActiveInput').prop('checked')
                 };
 
                 $.ajax({
-                    url: 'https://localhost:7012/api/Users',
+                    url: '@Url.Action("CreateFromApi", "Users")',
                     type: 'POST',
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                     contentType: 'application/json',
                     data: JSON.stringify(newUser),
                     success: function (data) {

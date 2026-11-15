@@ -1,55 +1,110 @@
 @model List<RealEase.Application.Dtos.Visit.VisitDto>
+@using RealEase.Domain.Models
 
 @{
-    ViewData["Title"] = "Visitas";
+    ViewData["Title"] = "Mis Visitas Agendadas";
 }
 
-<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
-    <div><h1 class="h2 mb-1">Visitas</h1><p class="text-secondary mb-0">Agenda y seguimiento de visitas a propiedades.</p></div>
-    <a asp-action="Create" class="btn btn-success">＋ Agendar visita</a>
-</div>
-
-@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
-@if (TempData["Error"] is string error) { <div class="alert alert-danger">@error</div> }
-@if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning">@apiError</div> }
-
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 pt-3 px-3 d-flex justify-content-between align-items-center gap-3">
-        <h2 class="h6 mb-0">Listado de visitas</h2>
-        <input id="visitSearch" class="form-control form-control-sm" style="max-width:300px" placeholder="Buscar por ID, estado o nota" />
+<div class="container-xl py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                Itinerario
+            </span>
+            <h1 class="display-6 fw-extrabold text-dark mb-1">Mis Visitas a Propiedades</h1>
+            <p class="text-secondary mb-0">Revisa el estado de tus recorridos agendados con nuestros agentes locales.</p>
+        </div>
+        <div>
+            <a asp-controller="Home" asp-action="Rent" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-search me-1"></i> Explorar más propiedades
+            </a>
+        </div>
     </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light"><tr><th>ID</th><th>Propiedad</th><th>Usuario</th><th>Fecha</th><th>Estado</th><th>Notas</th><th class="text-end">Acciones</th></tr></thead>
-            <tbody id="visitRows">
+
+    @if (TempData["Success"] is string success) { <div class="alert alert-success rounded-4 shadow-sm mb-4"><i class="bi bi-check-circle-fill me-2"></i>@success</div> }
+    @if (TempData["Error"] is string error) { <div class="alert alert-danger rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-triangle-fill me-2"></i>@error</div> }
+    @if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-circle-fill me-2"></i>@apiError</div> }
+
+    @if (Model.Count == 0)
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <i class="bi bi-calendar2-heart text-success display-3 mb-3 d-block"></i>
+            <h4 class="fw-bold text-dark">Aún no tienes visitas agendadas</h4>
+            <p class="text-secondary max-w-md mx-auto mb-4">
+                Cuando encuentres una casa o apartamento que te guste, puedes solicitar un recorrido presencial en la fecha que prefieras.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a asp-controller="Home" asp-action="Rent" class="btn btn-success rounded-pill px-4 fw-bold">
+                    Ver propiedades en alquiler
+                </a>
+                <a asp-controller="Home" asp-action="Buy" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
+                    Ver casas en venta
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @foreach (var visit in Model)
             {
-                <tr class="visit-row" data-search="@($"{visit.Id} {visit.PropertyId} {visit.UserId} {visit.Status} {visit.Notes}".ToLowerInvariant())">
-                    <td class="text-secondary">#@visit.Id</td>
-                    <td><a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId">#@visit.PropertyId</a></td>
-                    <td class="text-break" style="max-width:180px">@visit.UserId</td>
-                    <td>@visit.VisitDate.ToLocalTime().ToString("g")</td>
-                    <td><span class="badge text-bg-light">@(visit.Status ?? "Sin estado")</span></td>
-                    <td class="text-secondary" style="max-width:240px">@(string.IsNullOrWhiteSpace(visit.Notes) ? "—" : visit.Notes)</td>
-                    <td><div class="d-flex justify-content-end gap-2">
-                        <a asp-action="Details" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
-                        <a asp-action="Edit" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <form asp-action="DeleteFromApi" asp-route-id="@visit.Id" method="post" onsubmit="return confirm('¿Eliminar esta visita?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
-                    </div></td>
-                </tr>
-            }
-            @if (Model.Count == 0) { <tr><td colspan="7" class="py-5 text-center text-secondary">No hay visitas registradas.</td></tr> }
-            </tbody>
-        </table>
-    </div>
-    <div class="card-footer bg-white text-secondary small">@Model.Count visita(s)</div>
-</div>
+                var isCompleted = string.Equals(visit.Status, "completed", StringComparison.OrdinalIgnoreCase);
+                var isPending = string.Equals(visit.Status, "pending", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(visit.Status);
+                var isCancelled = string.Equals(visit.Status, "cancelled", StringComparison.OrdinalIgnoreCase);
 
-@section Scripts {
-<script>
-document.getElementById('visitSearch')?.addEventListener('input', event => {
-    const query = event.target.value.trim().toLocaleLowerCase();
-    document.querySelectorAll('.visit-row').forEach(row => row.classList.toggle('d-none', !row.dataset.search.includes(query)));
-});
-</script>
-}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                        <div class="card-body p-4 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge rounded-pill px-3 py-1.5 fw-bold @(isCompleted ? "bg-success-subtle text-success" : isCancelled ? "bg-danger-subtle text-danger" : "bg-warning-subtle text-dark")">
+                                        <i class="bi @(isCompleted ? "bi-check2-circle" : isCancelled ? "bi-x-circle" : "bi-clock-history") me-1"></i>
+                                        @(visit.Status ?? "Pendiente de confirmación")
+                                    </span>
+                                    <span class="text-secondary small">Visita #@visit.Id</span>
+                                </div>
+
+                                <h5 class="fw-bold text-dark mb-2">
+                                    <a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId" class="text-decoration-none text-dark hover-success">
+                                        Propiedad #@visit.PropertyId
+                                    </a>
+                                </h5>
+
+                                <div class="p-3 bg-light rounded-3 mb-3 border">
+                                    <div class="d-flex align-items-center gap-2 text-dark fw-semibold mb-1 small">
+                                        <i class="bi bi-calendar-event text-success"></i>
+                                        @visit.VisitDate.ToLocalTime().ToString("dddd, dd 'de' MMMM yyyy", new System.Globalization.CultureInfo("es-ES"))
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 text-secondary small">
+                                        <i class="bi bi-clock text-success"></i>
+                                        @visit.VisitDate.ToLocalTime().ToString("hh:mm tt")
+                                    </div>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(visit.Notes))
+                                {
+                                    <p class="text-secondary small mb-0">
+                                        <strong class="text-dark">Notas:</strong> @visit.Notes
+                                    </p>
+                                }
+                            </div>
+
+                            <div class="pt-3 border-top mt-3 d-flex justify-content-between align-items-center">
+                                <a asp-controller="Properties" asp-action="Details" asp-route-id="@visit.PropertyId" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+                                    Ver propiedad
+                                </a>
+                                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Agent))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-2">
+                                        Gestionar
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

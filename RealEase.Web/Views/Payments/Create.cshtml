@@ -8,6 +8,7 @@
 </div>
 
 <form id="createPaymentForm" class="form-surface card border-0">
+    @Html.AntiForgeryToken()
     <div class="form-surface-heading"><span class="detail-icon"><i class="bi bi-credit-card-2-front"></i></span><div><h2>Información del pago</h2><p>Los campos marcados son necesarios para registrar el pago.</p></div></div>
     <div id="paymentFormError" class="alert alert-danger d-none" role="alert"></div>
     <div class="row g-3">
@@ -40,7 +41,14 @@
             Status: document.getElementById('statusInput').value
         };
         try {
-            const response = await fetch(window.realEaseApiBaseUrl + 'api/Payments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const response = await fetch('@Url.Action("CreateFromApi", "Payments")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(payload)
+            });
             if (!response.ok) throw new Error(await response.text() || 'No se pudo registrar el pago.');
             window.location.assign('/Payments');
         } catch (error) {

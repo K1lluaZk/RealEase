@@ -1,65 +1,201 @@
 @model List<RealEase.Application.Dtos.Payment.PaymentDto>
+@using RealEase.Domain.Models
 
 @{
-    ViewData["Title"] = "Pagos";
+    ViewData["Title"] = "Gestión de Pagos";
+    var completedCount = Model.Count(p => string.Equals(p.Status, "completed", StringComparison.OrdinalIgnoreCase) || string.Equals(p.Status, "pagado", StringComparison.OrdinalIgnoreCase));
+    var totalCollected = Model.Where(p => string.Equals(p.Status, "completed", StringComparison.OrdinalIgnoreCase) || string.Equals(p.Status, "pagado", StringComparison.OrdinalIgnoreCase)).Sum(p => p.Amount);
 }
 
-<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
-    <div><h1 class="h2 mb-1">Pagos</h1><p class="text-secondary mb-0">Historial de pagos recibidos y su estado.</p></div>
-    <a asp-action="Create" class="btn btn-success">＋ Registrar pago</a>
-</div>
+<div class="container-xl py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold text-uppercase">
+                    <i class="bi bi-credit-card-fill me-1"></i> Control Financiero
+                </span>
+                <span class="text-secondary small">Panel de Gestión</span>
+            </div>
+            <h1 class="display-6 fw-extrabold text-dark mb-0">Historial y Cobros de Pagos</h1>
+            <p class="text-secondary small mb-0">Seguimiento de transacciones, cuotas de alquiler y recibos emitidos.</p>
+        </div>
 
-@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
-@if (TempData["Error"] is string error) { <div class="alert alert-danger">@error</div> }
-@if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning">@apiError</div> }
-
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 pt-3 px-3 d-flex justify-content-between align-items-center gap-3">
-        <h2 class="h6 mb-0">Listado de pagos</h2>
-        <input id="paymentSearch" class="form-control form-control-sm" style="max-width:300px" placeholder="Buscar por contrato, inquilino o estado" />
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light"><tr><th>ID</th><th>Contrato</th><th>Inquilino</th><th>Fecha</th><th>Monto</th><th>Método</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
-            <tbody>
-            @foreach (var payment in Model)
+        <div class="d-flex gap-2">
+            @if (User.IsInRole(UserRoles.Agent))
             {
-                <tr class="payment-row" data-search="@($"{payment.Id} {payment.ContractId} {payment.TenantId} {payment.Status} {payment.PaymentMethod}".ToLowerInvariant())">
-                    <td class="text-secondary">#@payment.Id</td>
-                    <td>
-                        @if (payment.ContractId is long contractId)
-                        {
-                            <a asp-controller="Contracts" asp-action="Details" asp-route-id="@contractId">#@contractId</a>
-                        }
-                        else
-                        {
-                            <span class="text-secondary">Sin contrato</span>
-                        }
-                    </td>
-                    <td class="text-break" style="max-width:180px">@payment.TenantId</td>
-                    <td>@payment.PaymentDate.ToLocalTime().ToString("g")</td>
-                    <td class="text-nowrap fw-semibold">@payment.Amount.ToString("C")</td>
-                    <td>@payment.PaymentMethod</td>
-                    <td><span class="badge text-bg-light">@payment.Status</span></td>
-                    <td><div class="d-flex justify-content-end gap-2">
-                        <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
-                        <a asp-action="Edit" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <form asp-action="DeleteFromApi" asp-route-id="@payment.Id" method="post" onsubmit="return confirm('¿Eliminar este pago?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
-                    </div></td>
-                </tr>
+                <a asp-controller="Agent" asp-action="Dashboard" class="btn btn-outline-dark rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Mi Panel
+                </a>
             }
-            @if (Model.Count == 0) { <tr><td colspan="8" class="py-5 text-center text-secondary">No hay pagos registrados.</td></tr> }
-            </tbody>
-        </table>
+            @if (User.IsInRole(UserRoles.Admin))
+            {
+                <a asp-action="Create" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
+                    <i class="bi bi-plus-lg"></i> Registrar Pago
+                </a>
+            }
+        </div>
     </div>
-    <div class="card-footer bg-white text-secondary small">@Model.Count pago(s)</div>
+
+    @if (TempData["Success"] is string success) { <div class="alert alert-success rounded-4 shadow-sm mb-4"><i class="bi bi-check-circle-fill me-2"></i>@success</div> }
+    @if (TempData["Error"] is string error) { <div class="alert alert-danger rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-triangle-fill me-2"></i>@error</div> }
+    @if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-circle-fill me-2"></i>@apiError</div> }
+
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-3 bg-white shadow-sm d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div>
+                    <span class="text-secondary small d-block">Pagos Completados</span>
+                    <h4 class="fw-extrabold text-dark mb-0">@completedCount</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-3 bg-white shadow-sm d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                    <i class="bi bi-receipt-cutoff"></i>
+                </div>
+                <div>
+                    <span class="text-secondary small d-block">Total de Transacciones</span>
+                    <h4 class="fw-extrabold text-dark mb-0">@Model.Count</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-3 bg-white shadow-sm d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle bg-info-subtle text-info-emphasis p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div>
+                    <span class="text-secondary small d-block">Total Recaudado</span>
+                    <h4 class="fw-extrabold text-dark mb-0">@totalCollected.ToString("C0")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white border-0 p-4 pb-2 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <h5 class="fw-bold text-dark mb-0">Listado de Pagos</h5>
+            <div class="input-group search-filter-box rounded-pill bg-light px-2 border" style="max-width: 320px;">
+                <span class="input-group-text bg-transparent border-0 text-secondary ps-2">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input id="paymentSearch" class="form-control border-0 bg-transparent ps-1" placeholder="Buscar por contrato, inquilino o estado..." />
+            </div>
+        </div>
+
+        <div class="table-responsive p-3">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">ID</th>
+                        <th>Contrato</th>
+                        <th>Inquilino / Cliente</th>
+                        <th>Fecha de Pago</th>
+                        <th>Monto</th>
+                        <th>Método</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentTableBody">
+                    @foreach (var payment in Model)
+                    {
+                        var isCompleted = string.Equals(payment.Status, "completed", StringComparison.OrdinalIgnoreCase) || string.Equals(payment.Status, "pagado", StringComparison.OrdinalIgnoreCase);
+
+                        <tr class="payment-row" data-search="@($"{payment.Id} {payment.ContractId} {payment.TenantId} {payment.Status} {payment.PaymentMethod}".ToLowerInvariant())">
+                            <td class="ps-3 fw-bold text-dark">#@payment.Id</td>
+                            <td>
+                                @if (payment.ContractId is long contractId)
+                                {
+                                    <a asp-controller="Contracts" asp-action="Details" asp-route-id="@contractId" class="text-decoration-none text-dark fw-semibold hover-success">
+                                        <i class="bi bi-file-earmark-text text-success me-1"></i> Contrato #@contractId
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-secondary small">Sin contrato</span>
+                                }
+                            </td>
+                            <td class="small text-truncate" style="max-width: 160px;" title="@payment.TenantId">
+                                <i class="bi bi-person text-muted me-1"></i> @payment.TenantId
+                            </td>
+                            <td class="small text-nowrap">
+                                @payment.PaymentDate.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")
+                            </td>
+                            <td class="fw-bold text-dark text-nowrap">
+                                @payment.Amount.ToString("C0")
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">
+                                    <i class="bi bi-credit-card me-1 text-muted"></i> @(string.IsNullOrWhiteSpace(payment.PaymentMethod) ? "Transferencia" : payment.PaymentMethod)
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(isCompleted ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning-emphasis") rounded-pill px-2.5 py-1">
+                                    @payment.Status
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="d-inline-flex gap-1.5">
+                                    <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Ver detalles">
+                                        <i class="bi bi-eye text-dark"></i>
+                                    </a>
+                                    @if (User.IsInRole(UserRoles.Admin))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-success rounded-pill px-2.5" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="DeleteFromApi" asp-route-id="@payment.Id" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este pago?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-secondary">
+                                <i class="bi bi-cash-stack display-5 text-muted d-block mb-2"></i>
+                                No hay registros de pago disponibles.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white border-0 text-secondary small p-3 ps-4">
+            Mostrando <strong>@Model.Count</strong> pago(s)
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-<script>
-document.getElementById('paymentSearch')?.addEventListener('input', event => {
-    const query = event.target.value.trim().toLocaleLowerCase();
-    document.querySelectorAll('.payment-row').forEach(row => row.classList.toggle('d-none', !row.dataset.search.includes(query)));
-});
-</script>
+    <script>
+        (() => {
+            const search = document.getElementById('paymentSearch');
+            const rows = [...document.querySelectorAll('.payment-row')];
+
+            search?.addEventListener('input', () => {
+                const query = search.value.trim().toLowerCase();
+                rows.forEach(row => {
+                    const matches = !query || row.dataset.search.includes(query);
+                    row.classList.toggle('d-none', !matches);
+                });
+            });
+        })();
+    </script>
 }

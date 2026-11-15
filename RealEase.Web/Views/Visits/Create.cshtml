@@ -2,96 +2,106 @@
 @model Visit
 
 @{
-    ViewData["Title"] = "Crear Visita";
+    ViewData["Title"] = "Agendar Visita";
 }
 
-<h1 class="text-center text-info">Crear Visita</h1>
+<div class="container-xl py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-secondary">Inicio</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="text-decoration-none text-secondary">Propiedad</a></li>
+            <li class="breadcrumb-item active text-success fw-semibold" aria-current="page">Agendar Visita</li>
+        </ol>
+    </nav>
 
-<div class="container mt-4">
-    <div class="card shadow-sm rounded-3">
-        <div class="card-body">
-            <h4 class="card-title text-secondary">Información de la Visita</h4>
-            <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                <div class="form-group row">
-                    <label class="col-md-3 col-form-label">ID Propiedad</label>
-                    <div class="col-md-6">
-                        <input type="number" step="1" class="form-control" id="propertyIdInput" name="PropertyId" />
+    <div class="max-w-2xl mx-auto">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+            <div class="p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 52px; height: 52px; font-size: 1.4rem;">
+                        <i class="bi bi-calendar2-check-fill"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold text-uppercase mb-1">
+                            Visita Guiada
+                        </span>
+                        <h3 class="fw-extrabold text-dark mb-0">Solicitar recorrido</h3>
+                        <p class="text-secondary small mb-0">@ViewData["PropertyTitle"]</p>
                     </div>
                 </div>
 
-                <div class="form-group row">
-                    <label class="col-md-3 col-form-label">ID Usuario</label>
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" id="userIdInput" name="UserId" placeholder="UUID del usuario" required />
-                    </div>
-                </div>
+                <form id="createVisitForm" class="d-grid gap-3">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="propertyIdInput" value="@Model.PropertyId" />
+                    <input type="hidden" id="userIdInput" value="@Model.UserId" />
 
-                <div class="form-group row">
-                    <label class="col-md-3 col-form-label">Fecha de Visita</label>
-                    <div class="col-md-6">
-                        <input type="datetime-local" class="form-control" id="visitDateInput" name="VisitDate" required />
+                    <div>
+                        <label for="visitDateInput" class="form-label small fw-bold text-dark">Fecha y hora preferida</label>
+                        <input type="datetime-local" class="form-control rounded-pill bg-light border px-3" id="visitDateInput" required />
+                        <small class="text-secondary mt-1 d-block">Selecciona un horario de lunes a sábado entre 9:00 AM y 6:00 PM.</small>
                     </div>
-                </div>
 
-                <div class="form-group row mb-3">
-                    <label class="col-md-3 col-form-label">Estado</label>
-                    <div class="col-md-6">
-                        <input class="form-control" id="statusInput" name="Status" list="status" placeholder="Ej. Disponible" />
-                        <datalist id="status">
-                            <option value="Pendiente" />
-                            <option value="Disponible" />
-                            <option value="Vendido" />
-                        </datalist>
+                    <div>
+                        <label for="notesInput" class="form-label small fw-bold text-dark">Mensaje o indicaciones para el agente <span class="text-secondary fw-normal">(opcional)</span></label>
+                        <textarea class="form-control rounded-4 bg-light border p-3" id="notesInput" rows="3" maxlength="500" placeholder="¿Deseas una visita presencial o virtual? ¿Irás acompañado?"></textarea>
                     </div>
-                </div>
 
-                <div class="form-group row">
-                    <label class="col-md-3 col-form-label">Notas</label>
-                    <div class="col-md-6">
-                        <input class="form-control" id="notesInput" name="Notes" />
+                    <div id="visitError" class="alert alert-danger rounded-4 d-none small" role="alert"></div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 pt-3 border-top mt-2">
+                        <a asp-controller="Properties" asp-action="Details" asp-route-id="@Model.PropertyId" class="btn btn-light rounded-pill px-4 fw-semibold">
+                            Cancelar
+                        </a>
+                        <button type="submit" id="addVisitButton" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">
+                            <i class="bi bi-calendar2-plus me-1"></i> Confirmar solicitud de visita
+                        </button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <div class="mt-4 d-flex justify-content-between">
-        <button id="addVisitButton" class="btn btn-primary">Guardar</button>
-        <a href="/Visits" class="btn btn-secondary">Cancelar</a>
     </div>
 </div>
 
-
-
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('#addVisitButton').click(function (e) {
-                e.preventDefault();
-                var newVisit = {
-                    PropertyId: $('#propertyIdInput').val(),
-                    UserId: $('#userIdInput').val(),
-                    VisitDate: new Date($('#visitDateInput').val()).toISOString(),
-                    Status: $('#statusInput').val(),
-                    Notes: $('#notesInput').val()
+        (() => {
+            const form = document.getElementById('createVisitForm');
+            const dateInput = document.getElementById('visitDateInput');
+            const submit = document.getElementById('addVisitButton');
+            const error = document.getElementById('visitError');
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            dateInput.min = now.toISOString().slice(0, 16);
 
-                };
-                $.ajax({
-                    url: window.realEaseApiBaseUrl + 'api/Visits',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(newVisit),
-                    success: function (data) {
-                        window.location.href = '/Visits';
-                    },
-                    error: function (error) {
-                        console.log('Error:', error);
-                    }
-                });
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+                if (!form.reportValidity()) return;
+
+                submit.disabled = true;
+                error.classList.add('d-none');
+                try {
+                    const response = await fetch('@Url.Action("CreateFromApi", "Visits")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({
+                            PropertyId: Number(document.getElementById('propertyIdInput').value),
+                            UserId: document.getElementById('userIdInput').value,
+                            VisitDate: new Date(dateInput.value).toISOString(),
+                            Notes: document.getElementById('notesInput').value
+                        })
+                    });
+                    if (!response.ok) throw new Error('No se pudo agendar la visita. Inténtalo de nuevo.');
+                    window.location.href = '@Url.Action("Index", "Visits")';
+                } catch (requestError) {
+                    error.textContent = requestError.message || 'Error al conectar con el servidor.';
+                    error.classList.remove('d-none');
+                    submit.disabled = false;
+                }
             });
-        });
+        })();
     </script>
-
 }

@@ -5,80 +5,73 @@
     ViewData["Title"] = "Editar Usuario";
 }
 
-<div class="max-w-3xl mx-auto px-4 py-8">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Editar Usuario</h1>
-        <p class="mt-2 text-sm text-gray-500">Modifica los datos de perfil del usuario seleccionado.</p>
+<section class="edit-page edit-page--user">
+    <div class="page-heading edit-page-heading">
+        <div class="edit-page-title">
+            <span class="edit-page-icon"><i class="bi bi-person-gear"></i></span>
+            <div><span class="eyebrow">Usuarios · @Model.FirstName @Model.LastName</span><h1>Editar usuario</h1><p>Modifica los datos de perfil y el acceso de la persona seleccionada.</p></div>
+        </div>
+        <a href="/Users" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver a usuarios</a>
     </div>
 
-    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 sm:p-8">
-        <form asp-action="Edit" id="editUserForm" class="space-y-6">
-            <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+    <form asp-action="Edit" id="editUserForm" class="form-surface card border-0">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-surface-heading"><span class="detail-icon"><i class="bi bi-person-vcard"></i></span><div><h2>Información del perfil</h2><p>Mantén los datos de contacto y el rol actualizados.</p></div></div>
 
-            <input type="hidden" asp-for="Id" />
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label asp-for="FirstName" class="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
-                    <input asp-for="FirstName" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="firstNameInput" required />
-                    <span asp-validation-for="FirstName" class="text-xs text-red-500 mt-1 block"></span>
-                </div>
-
-                <div>
-                    <label asp-for="LastName" class="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
-                    <input asp-for="LastName" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="lastNameInput" required />
-                    <span asp-validation-for="LastName" class="text-xs text-red-500 mt-1 block"></span>
-                </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="FirstName" class="form-label">Nombres</label>
+                <input asp-for="FirstName" class="form-control" id="firstNameInput" required />
+                <span asp-validation-for="FirstName" class="text-danger small"></span>
             </div>
-
-            <div>
-                <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-                <input asp-for="Email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="emailInput" required />
-                <span asp-validation-for="Email" class="text-xs text-red-500 mt-1 block"></span>
+            <div class="col-md-6">
+                <label asp-for="LastName" class="form-label">Apellidos</label>
+                <input asp-for="LastName" class="form-control" id="lastNameInput" required />
+                <span asp-validation-for="LastName" class="text-danger small"></span>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label asp-for="PhoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                    <input asp-for="PhoneNumber" type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="phoneNumberInput" required />
-                    <span asp-validation-for="PhoneNumber" class="text-xs text-red-500 mt-1 block"></span>
-                </div>
-
+            <div class="col-12">
+                <label asp-for="Email" class="form-label">Correo electrónico</label>
+                <input asp-for="Email" type="email" class="form-control" id="emailInput" required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
-
-            <div>
-                <label asp-for="Role" class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
-                <input asp-for="Role" class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors duration-200 outline-none" id="roleInput" list="roles" placeholder="Ej. Administrador" required />
-                <datalist id="roles">
-                    <option value="Administrador" />
-                    <option value="Agente de ventas" />
-                    <option value="Dueño" />
-                    <option value="Cliente" />
-                </datalist>
-                <span asp-validation-for="Role" class="text-xs text-red-500 mt-1 block"></span>
+            <div class="col-md-6">
+                <label asp-for="PhoneNumber" class="form-label">Teléfono</label>
+                <input asp-for="PhoneNumber" type="tel" class="form-control" id="phoneNumberInput" required />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
             </div>
-
-            <div class="flex items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <div class="flex items-center h-5">
-                    <input asp-for="IsActive" type="checkbox" class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 transition-colors cursor-pointer" id="isActiveInput" />
-                </div>
-                <div class="ml-3 text-sm">
-                    <label asp-for="IsActive" class="font-medium text-gray-700 cursor-pointer">Cuenta activa y habilitada</label>
-                    <p class="text-xs text-gray-500">Determina si el usuario mantiene permisos vigentes para operar dentro del ecosistema.</p>
+            <div class="col-md-6">
+                <label asp-for="Role" class="form-label">Rol</label>
+                <select asp-for="Role" class="form-select" id="roleInput" required>
+                    <option value="client">Cliente</option>
+                    <option value="agent">Agente</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="ServiceArea" class="form-label">Zonas que atiende</label>
+                <input asp-for="ServiceArea" class="form-control" id="serviceAreaInput" placeholder="Ej. Santo Domingo, Santiago" />
+                <p class="edit-help">Solo para agentes. Separa las ciudades o zonas con comas para asignar solicitudes de venta.</p>
+            </div>
+            <div class="col-12">
+                <div class="edit-supplement d-flex align-items-center gap-3">
+                    <input asp-for="IsActive" type="checkbox" class="form-check-input m-0" id="isActiveInput" />
+                    <div>
+                        <label for="isActiveInput" class="form-label mb-0">Cuenta activa y habilitada</label>
+                        <p class="edit-help mb-0">Determina si el usuario puede operar dentro de la plataforma.</p>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
-                <a href="/Users" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
-                    Cancelar
-                </a>
-                <button type="button" id="UpdateUserButton" class="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm shadow-emerald-600/10 transition-all duration-200">
-                    Guardar Cambios
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="form-surface-actions">
+            <a href="/Users" class="btn btn-light">Cancelar</a>
+            <button type="button" id="UpdateUserButton" class="btn btn-realease"><i class="bi bi-check2-circle"></i> Guardar cambios</button>
+        </div>
+    </form>
+</section>
 
 @section Scripts
 {
@@ -98,13 +91,15 @@
                     LastName: $('#lastNameInput').val(),
                     Email: $('#emailInput').val(),
                     PhoneNumber: $('#phoneNumberInput').val(),
+                    ServiceArea: $('#serviceAreaInput').val(),
                     Role: $('#roleInput').val(),
                     IsActive: $('#isActiveInput').is(':checked')
                 };
 
                 $.ajax({
-                    url: 'https://localhost:7012/api/Users',
+                    url: '@Url.Action("UpdateFromApi", "Users")',
                     type: 'PUT',
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                     contentType: 'application/json',
                     data: JSON.stringify(updatedUser),
                     success: function () {

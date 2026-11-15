@@ -1,75 +1,122 @@
 @using Microsoft.AspNetCore.Components
 
-<section class="benefits-page">
-    <div class="benefits-hero">
-        <div class="benefits-hero-copy">
-            <span class="eyebrow"><i class="bi bi-stars"></i> Tu próximo lugar empieza aquí</span>
-            <h1>Encontrar hogar debería sentirse <span>fácil.</span></h1>
-            <p>Explora espacios con información clara, agenda una visita y gestiona cada paso desde un solo lugar.</p>
-            <div class="benefits-hero-actions">
-                <a class="btn btn-realease btn-lg" href="/Properties">Explorar propiedades <i class="bi bi-arrow-right"></i></a>
-                <a class="benefits-secondary-link" href="/Visits">Cómo funciona</a>
+<section class="benefits-experience-container py-4">
+    <!-- Hero Banner with Real Photo -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-5 bg-dark text-white position-relative">
+        <div class="row g-0 align-items-center">
+            <div class="col-lg-7 p-4 p-md-5 z-1">
+                <span class="badge bg-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-3">
+                    <i class="bi bi-stars me-1"></i> Experiencia RealEase
+                </span>
+                <h1 class="display-5 fw-extrabold text-white mb-3">
+                    Encontrar tu próximo hogar ahora es <span class="text-success-light">fácil y transparente.</span>
+                </h1>
+                <p class="lead text-white-50 mb-4 pe-lg-4">
+                    Olvídate de procesos confusos, fotos engañosas o tarifas ocultas. Diseñamos una plataforma centrada en darte la mejor experiencia al alquilar o comprar.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="/Home/Rent" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="bi bi-key-fill me-1"></i> Explorar alquileres
+                    </a>
+                    <a href="/Home/Buy" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold">
+                        <i class="bi bi-house-door me-1"></i> Casas en venta
+                    </a>
+                </div>
+
+                <div class="d-flex flex-wrap gap-4 mt-4 pt-3 border-top border-white border-opacity-10 text-white-50 small">
+                    <span class="d-flex align-items-center gap-1.5 text-white">
+                        <i class="bi bi-check-circle-fill text-success"></i> Propiedades inspeccionadas
+                    </span>
+                    <span class="d-flex align-items-center gap-1.5 text-white">
+                        <i class="bi bi-calendar2-check-fill text-success"></i> Visitas coordinadas
+                    </span>
+                    <span class="d-flex align-items-center gap-1.5 text-white">
+                        <i class="bi bi-shield-fill-check text-info"></i> Seguridad certificada
+                    </span>
+                </div>
             </div>
-            <div class="benefits-trust-row">
-                <span><i class="bi bi-shield-check"></i> Publicaciones transparentes</span>
-                <span><i class="bi bi-calendar2-check"></i> Visitas organizadas</span>
+
+            <!-- Beautiful Real Estate Photo replacing geometric CSS shapes -->
+            <div class="col-lg-5 position-relative" style="min-height: 420px;">
+                <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80" 
+                     alt="Interior moderno y acogedor" 
+                     class="w-100 h-100 object-fit-cover position-absolute top-0 start-0" />
+                <div class="position-absolute bottom-0 start-0 m-4 p-3 rounded-4 bg-white bg-opacity-95 text-dark shadow-lg backdrop-blur" style="max-width: 280px;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-patch-check-fill text-success fs-5"></i>
+                        <strong class="small">100% Verificado</strong>
+                    </div>
+                    <p class="small text-secondary mb-0">Cada hogar pasa por un riguroso control antes de ser publicado.</p>
+                </div>
             </div>
-        </div>
-        <div class="benefits-hero-art" aria-label="Ilustración de un hogar moderno">
-            <div class="art-sun"></div>
-            <div class="art-building">
-                <div class="art-roof"></div>
-                <div class="art-window art-window-one"></div>
-                <div class="art-window art-window-two"></div>
-                <div class="art-door"></div>
-                <div class="art-plant"><i></i><i></i><i></i></div>
-            </div>
-            <div class="art-caption"><i class="bi bi-geo-alt-fill"></i><span><b>Un lugar para ti</b><small>Tu próxima historia comienza en casa</small></span></div>
         </div>
     </div>
 
-    <div class="benefits-heading">
-        <span class="eyebrow">Una experiencia pensada para ti</span>
-        <h2>Todo lo que necesitas, en un solo lugar</h2>
-        <p>Menos vueltas. Más claridad para tomar una buena decisión.</p>
+    <!-- Interactive Benefits Section -->
+    <div class="text-center max-w-2xl mx-auto mb-5">
+        <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+            Ventajas Exclusivas
+        </span>
+        <h2 class="display-6 fw-extrabold text-dark mb-2">Una experiencia pensada para el cliente</h2>
+        <p class="text-secondary">Diseñado para que tomes la mejor decisión con tranquilidad y confianza.</p>
     </div>
 
-    <div class="benefit-grid">
+    <div class="row g-4 mb-4">
         @foreach (var benefit in Benefits)
         {
-            <button type="button" class="benefit-tile @(_selected == benefit.Title ? "is-selected" : "")" @onclick="() => SelectBenefit(benefit.Title)" aria-expanded="@(_selected == benefit.Title)">
-                <span class="benefit-icon @benefit.Tone"><i class="bi @benefit.Icon"></i></span>
-                <span class="benefit-tile-copy"><b>@benefit.Title</b><span>@benefit.Summary</span></span>
-                <i class="bi bi-arrow-up-right benefit-arrow"></i>
-            </button>
+            var isSelected = _selected == benefit.Title;
+            <div class="col-md-6">
+                <button type="button" 
+                        class="card h-100 p-4 border text-start w-100 rounded-4 transition-all @(isSelected ? "border-success shadow-md bg-white" : "border-0 shadow-sm bg-white hover-shadow")" 
+                        @onclick="() => SelectBenefit(benefit.Title)" 
+                        aria-expanded="@isSelected">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-4 p-3 d-flex align-items-center justify-content-center text-white @benefit.BgColor" style="width: 54px; height: 54px; font-size: 1.4rem;">
+                            <i class="bi @benefit.Icon"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="fw-bold text-dark mb-0">@benefit.Title</h5>
+                                <i class="bi @(isSelected ? "bi-chevron-up text-success" : "bi-chevron-down text-secondary")"></i>
+                            </div>
+                            <p class="text-secondary small mb-0">@benefit.Summary</p>
+
+                            @if (isSelected)
+                            {
+                                <div class="mt-3 pt-3 border-top text-dark small bg-light p-3 rounded-3">
+                                    <i class="bi bi-info-circle-fill text-success me-1"></i> @benefit.Detail
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </button>
+            </div>
         }
     </div>
 
-    @if (_selected is not null)
-    {
-        var selectedBenefit = Benefits.First(item => item.Title == _selected);
-        <div class="benefit-detail" role="status">
-            <span class="benefit-detail-icon"><i class="bi @selectedBenefit.Icon"></i></span>
-            <div><b>@selectedBenefit.Title</b><p>@selectedBenefit.Detail</p></div>
-            <button type="button" class="btn-close ms-auto" aria-label="Cerrar" @onclick="() => _selected = null"></button>
+    <!-- Call to action -->
+    <div class="card border-0 rounded-4 p-4 p-lg-5 bg-light text-center mt-5">
+        <div class="max-w-xl mx-auto">
+            <h3 class="fw-extrabold text-dark mb-2">¿Listo para dar el siguiente paso?</h3>
+            <p class="text-secondary mb-4">Descubre casas y apartamentos listos para alquilar o comprar hoy mismo.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/Home/Rent" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm">
+                    Ver alquileres destacados <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
         </div>
-    }
-
-    <div class="benefits-bottom-cta">
-        <div><span class="eyebrow">Tu próximo paso</span><h2>¿Listo para encontrar tu espacio?</h2><p>Descubre opciones que se ajustan a lo que estás buscando.</p></div>
-        <a class="btn btn-light btn-lg" href="/Properties">Ver propiedades <i class="bi bi-arrow-right"></i></a>
     </div>
 </section>
 
 @code {
     private string? _selected;
 
-    private static readonly (string Icon, string Tone, string Title, string Summary, string Detail)[] Benefits =
+    private static readonly (string Icon, string BgColor, string Title, string Summary, string Detail)[] Benefits =
     [
-        ("bi-patch-check", "tone-coral", "Información clara", "Conoce los detalles de cada espacio antes de visitarlo.", "Consulta fotos, ubicación, características y precio en una publicación fácil de entender."),
-        ("bi-calendar2-heart", "tone-lilac", "Visitas sin complicaciones", "Coordina una visita y mantén todo organizado.", "Revisa las visitas agendadas y los detalles importantes para aprovechar cada recorrido."),
-        ("bi-file-earmark-text", "tone-amber", "Gestión en un mismo lugar", "Consulta contratos y pagos con mayor claridad.", "Accede a la información de tus acuerdos y pagos desde una sola experiencia."),
-        ("bi-shield-lock", "tone-mint", "Más tranquilidad", "Una experiencia diseñada alrededor de la confianza.", "Mantén la información relevante de propiedades, visitas y acuerdos reunida en la plataforma.")
+        ("bi-camera-fill", "bg-success", "Fotografías 100% Reales", "Conoce cada espacio con imágenes fieles y detalladas.", "Garantizamos fotografías de alta calidad que reflejan exactamente el estado actual de la vivienda, sus dimensiones y amenidades."),
+        ("bi-calendar2-check-fill", "bg-primary", "Visitas Rápidas y Guiadas", "Coordina tu visita presencial en pocos clics.", "Elige la fecha y hora que mejor te convenga; un agente inmobiliario local te recibirá y resolverá cualquier duda sobre el inmueble."),
+        ("bi-person-check-fill", "bg-teal", "Asesoría Local Experta", "Conexión directa con agentes de zona calificados.", "Tendrás un asesor dedicado a tu sector de interés que te brindará soporte personalizado desde la primera consulta hasta la entrega."),
+        ("bi-shield-fill-check", "bg-dark", "Transparencia Total", "Precios claros y sin comisiones sorpresa.", "Publicamos las tarifas exactas de alquiler y venta, condiciones claras y el detalle de servicios incluidos en cada propiedad.")
     ];
 
     private void SelectBenefit(string title) => _selected = _selected == title ? null : title;

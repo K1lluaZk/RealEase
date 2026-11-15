@@ -33,6 +33,7 @@
 
 
 <div class="mb-4 mt-4">
+    @Html.AntiForgeryToken()
     <input type="text" id="filterName" placeholder="Nombre" class="form-control mb-2" />
     <input type="text" id="filterRole" placeholder="Rol" class="form-control mb-2" />
     <select id="filterIsActive" class="form-control mb-2">
@@ -83,7 +84,7 @@
 
 
             $('#addUserButton').click(function () {
-                window.location.href = 'https://localhost:7146/Users/Create';
+                window.location.href = '@Url.Action("Create", "Users")';
             });
 
 
@@ -91,8 +92,9 @@
                 var userId = $(this).data('id');
                 if (confirm('Are you sure you want to delete this User?')) {
                     $.ajax({
-                        url: 'https://localhost:7012/api/Users/' + userId,
-                        type: 'DELETE',
+                        url: '@Url.Action("DeleteFromApi", "Users")?id=' + encodeURIComponent(userId),
+                        type: 'POST',
+                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                         success: function () {
                             alert('User deleted successfully');
                             loadUsers();
@@ -107,13 +109,13 @@
 
             $(document).on('click', '.edit-User', function () {
                 var userId = $(this).data('id');
-                window.location.href = 'https://localhost:7146/Users/Edit/' + userId;
+                window.location.href = '@Url.Action("Edit", "Users")/' + encodeURIComponent(userId);
             });
 
 
             $(document).on('click', '.view-User', function () {
                 var userId = $(this).data('id');
-                window.location.href = 'https://localhost:7146/Users/Details/' + userId;
+                window.location.href = '@Url.Action("Details", "Users")/' + encodeURIComponent(userId);
             });
 
 
@@ -123,7 +125,7 @@
                 var isActive = $('#filterIsActive').val();
 
                 $.ajax({
-                    url: 'https://localhost:7012/api/Users/filter',
+                    url: '@Url.Action("FilterFromApi", "Users")',
                     type: 'GET',
                     data: {
                         name: name,
@@ -143,7 +145,7 @@
 
         function loadUsers() {
             $.ajax({
-                url: 'https://localhost:7012/api/Users',
+                url: '@Url.Action("ListFromApi", "Users")',
                 type: 'GET',
                 success: function (data) {
                     renderUserTable(data);

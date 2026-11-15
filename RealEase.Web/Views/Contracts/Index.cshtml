@@ -1,56 +1,195 @@
 @model List<RealEase.Application.Dtos.Contract.ContractDto>
+@using RealEase.Domain.Models
 
 @{
-    ViewData["Title"] = "Contratos";
+    ViewData["Title"] = "Gestión de Contratos";
+    var activeCount = Model.Count(c => string.Equals(c.Status, "active", StringComparison.OrdinalIgnoreCase) || string.Equals(c.Status, "signed", StringComparison.OrdinalIgnoreCase));
+    var totalAmount = Model.Sum(c => c.TotalAmount);
 }
 
-<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
-    <div><h1 class="h2 mb-1">Contratos</h1><p class="text-secondary mb-0">Acuerdos de alquiler asociados a clientes, agentes y propiedades.</p></div>
-    <a asp-action="Create" class="btn btn-success">＋ Nuevo contrato</a>
-</div>
+<div class="container-xl py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold text-uppercase">
+                    <i class="bi bi-file-earmark-text-fill me-1"></i> Acuerdos Inmobiliarios
+                </span>
+                <span class="text-secondary small">Panel de Gestión</span>
+            </div>
+            <h1 class="display-6 fw-extrabold text-dark mb-0">Contratos de Arrendamiento y Venta</h1>
+            <p class="text-secondary small mb-0">Revisa la vigencia, montos acordados y estados legales de cada inmueble.</p>
+        </div>
 
-@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
-@if (TempData["Error"] is string error) { <div class="alert alert-danger">@error</div> }
-@if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning">@apiError</div> }
-
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 pt-3 px-3 d-flex justify-content-between align-items-center gap-3">
-        <h2 class="h6 mb-0">Listado de contratos</h2>
-        <input id="contractSearch" class="form-control form-control-sm" style="max-width:300px" placeholder="Buscar por cliente, propiedad o estado" />
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light"><tr><th>ID</th><th>Cliente</th><th>Agente</th><th>Propiedad</th><th>Vigencia</th><th>Total</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
-            <tbody>
-            @foreach (var contract in Model)
+        <div class="d-flex gap-2">
+            @if (User.IsInRole(UserRoles.Agent))
             {
-                <tr class="contract-row" data-search="@($"{contract.Id} {contract.ClientId} {contract.AgentId} {contract.PropertyId} {contract.Status}".ToLowerInvariant())">
-                    <td class="text-secondary">#@contract.Id</td>
-                    <td class="text-break" style="max-width:160px">@contract.ClientId</td>
-                    <td class="text-break" style="max-width:160px">@(contract.AgentId?.ToString() ?? "—")</td>
-                    <td><a asp-controller="Properties" asp-action="Details" asp-route-id="@contract.PropertyId">#@contract.PropertyId</a></td>
-                    <td>@contract.StartDate.ToString("d") – @contract.EndDate.ToString("d")</td>
-                    <td class="text-nowrap">@contract.TotalAmount.ToString("C")</td>
-                    <td><span class="badge text-bg-light">@contract.Status</span></td>
-                    <td><div class="d-flex justify-content-end gap-2">
-                        <a asp-action="Details" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
-                        <a asp-action="Edit" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <form asp-action="DeleteFromApi" asp-route-id="@contract.Id" method="post" onsubmit="return confirm('¿Eliminar este contrato?');"><button class="btn btn-sm btn-outline-danger">Eliminar</button></form>
-                    </div></td>
-                </tr>
+                <a asp-controller="Agent" asp-action="Dashboard" class="btn btn-outline-dark rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Mi Panel
+                </a>
             }
-            @if (Model.Count == 0) { <tr><td colspan="8" class="py-5 text-center text-secondary">No hay contratos registrados.</td></tr> }
-            </tbody>
-        </table>
+            @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Agent))
+            {
+                <a asp-action="Create" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
+                    <i class="bi bi-plus-lg"></i> Nuevo Contrato
+                </a>
+            }
+        </div>
     </div>
-    <div class="card-footer bg-white text-secondary small">@Model.Count contrato(s)</div>
+
+    @if (TempData["Success"] is string success) { <div class="alert alert-success rounded-4 shadow-sm mb-4"><i class="bi bi-check-circle-fill me-2"></i>@success</div> }
+    @if (TempData["Error"] is string error) { <div class="alert alert-danger rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-triangle-fill me-2"></i>@error</div> }
+    @if (ViewData["ApiError"] is string apiError) { <div class="alert alert-warning rounded-4 shadow-sm mb-4"><i class="bi bi-exclamation-circle-fill me-2"></i>@apiError</div> }
+
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-3 bg-white shadow-sm d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                    <i class="bi bi-file-earmark-check-fill"></i>
+                </div>
+                <div>
+                    <span class="text-secondary small d-block">Contratos Activos</span>
+                    <h4 class="fw-extrabold text-dark mb-0">@activeCount</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-3 bg-white shadow-sm d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                    <i class="bi bi-collection-fill"></i>
+                </div>
+                <div>
+                    <span class="text-secondary small d-block">Total Registrados</span>
+                    <h4 class="fw-extrabold text-dark mb-0">@Model.Count</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 rounded-4 p-3 bg-white shadow-sm d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle bg-info-subtle text-info-emphasis p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div>
+                    <span class="text-secondary small d-block">Monto Acordado Global</span>
+                    <h4 class="fw-extrabold text-dark mb-0">@totalAmount.ToString("C0")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white border-0 p-4 pb-2 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <h5 class="fw-bold text-dark mb-0">Listado de Contratos</h5>
+            <div class="input-group search-filter-box rounded-pill bg-light px-2 border" style="max-width: 320px;">
+                <span class="input-group-text bg-transparent border-0 text-secondary ps-2">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input id="contractSearch" class="form-control border-0 bg-transparent ps-1" placeholder="Buscar por ID, cliente, propiedad o estado..." />
+            </div>
+        </div>
+
+        <div class="table-responsive p-3">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">ID</th>
+                        <th>Propiedad</th>
+                        <th>Cliente / Inquilino</th>
+                        <th>Agente Asignado</th>
+                        <th>Vigencia</th>
+                        <th>Monto Total</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="contractTableBody">
+                    @foreach (var contract in Model)
+                    {
+                        var isAct = string.Equals(contract.Status, "active", StringComparison.OrdinalIgnoreCase) || string.Equals(contract.Status, "signed", StringComparison.OrdinalIgnoreCase);
+
+                        <tr class="contract-row" data-search="@($"{contract.Id} {contract.ClientId} {contract.AgentId} {contract.PropertyId} {contract.Status}".ToLowerInvariant())">
+                            <td class="ps-3 fw-bold text-dark">#@contract.Id</td>
+                            <td>
+                                <a asp-controller="Properties" asp-action="Details" asp-route-id="@contract.PropertyId" class="text-decoration-none text-dark fw-semibold hover-success">
+                                    <i class="bi bi-house-door text-success me-1"></i> Propiedad #@contract.PropertyId
+                                </a>
+                            </td>
+                            <td class="small text-truncate" style="max-width: 160px;" title="@contract.ClientId">
+                                <i class="bi bi-person text-muted me-1"></i> @contract.ClientId
+                            </td>
+                            <td class="small text-truncate" style="max-width: 160px;">
+                                @(contract.AgentId.HasValue ? $"Agente #{contract.AgentId.Value.ToString().Substring(0, 8)}..." : "—")
+                            </td>
+                            <td class="small text-nowrap">
+                                @contract.StartDate.ToString("dd/MM/yyyy") – @contract.EndDate.ToString("dd/MM/yyyy")
+                            </td>
+                            <td class="fw-bold text-dark text-nowrap">
+                                @contract.TotalAmount.ToString("C0")
+                            </td>
+                            <td>
+                                <span class="badge @(isAct ? "bg-success-subtle text-success" : "bg-light text-secondary border") rounded-pill px-2.5 py-1">
+                                    @contract.Status
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="d-inline-flex gap-1.5">
+                                    <a asp-action="Details" asp-route-id="@contract.Id" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Ver detalles">
+                                        <i class="bi bi-eye text-dark"></i>
+                                    </a>
+                                    @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Agent))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-success rounded-pill px-2.5" title="Editar contrato">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    }
+                                    @if (User.IsInRole(UserRoles.Admin))
+                                    {
+                                        <form asp-action="DeleteFromApi" asp-route-id="@contract.Id" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este contrato?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-secondary">
+                                <i class="bi bi-file-earmark-x display-5 text-muted d-block mb-2"></i>
+                                No hay contratos registrados actualmente.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white border-0 text-secondary small p-3 ps-4">
+            Mostrando <strong>@Model.Count</strong> contrato(s)
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-<script>
-document.getElementById('contractSearch')?.addEventListener('input', event => {
-    const query = event.target.value.trim().toLocaleLowerCase();
-    document.querySelectorAll('.contract-row').forEach(row => row.classList.toggle('d-none', !row.dataset.search.includes(query)));
-});
-</script>
+    <script>
+        (() => {
+            const search = document.getElementById('contractSearch');
+            const rows = [...document.querySelectorAll('.contract-row')];
+
+            search?.addEventListener('input', () => {
+                const query = search.value.trim().toLowerCase();
+                rows.forEach(row => {
+                    const matches = !query || row.dataset.search.includes(query);
+                    row.classList.toggle('d-none', !matches);
+                });
+            });
+        })();
+    </script>
 }

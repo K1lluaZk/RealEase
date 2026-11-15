@@ -1,4 +1,5 @@
 ﻿@using RealEase.Domain.Entities
+@using RealEase.Domain.Models
 @model Payment
 
 @{
@@ -17,5 +18,8 @@
         <div><span>Fecha</span><strong>@Model.PaymentDate.ToLocalTime().ToString("f")</strong></div>
         <div><span>Método</span><strong>@Model.PaymentMethod</strong></div>
     </div>
-    <div class="detail-actions"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-realease"><i class="bi bi-pencil-square"></i> Editar pago</a></div>
+    @if (User.IsInRole(UserRoles.Admin))
+    {
+        <div class="detail-actions"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-realease"><i class="bi bi-pencil-square"></i> Editar pago</a></div>
+    }
 </div>
