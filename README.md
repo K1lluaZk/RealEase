@@ -94,17 +94,6 @@ Contributions are welcome! If you’d like to help improve RealEase, please:
 
 ## Screenshot
 
-![image](https://github.com/user-attachments/assets/b8fedc59-cffd-47bd-b28e-b1a69bf0dc12)
-
-![image](https://github.com/user-attachments/assets/1c558658-4700-4c72-9f7c-bc225c8a1cbe)
-
-![image](https://github.com/user-attachments/assets/009621ca-894c-4414-b1dd-a30285acafa0)
-
-![image](https://github.com/user-attachments/assets/151a192d-d7c2-4bba-9ee6-dc6b100a6958)
-
-![image](https://github.com/user-attachments/assets/ac52ace9-8561-459c-bb7a-2939aaf3e730)
-
-
 
 
 ## License
