@@ -1,0 +1,51 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "name": "RealEase.API (Backend / Swagger)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/RealEase.API/bin/Debug/net8.0/RealEase.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/RealEase.API",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/swagger"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "RealEase.Web (Frontend MVC)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-web",
+      "program": "${workspaceFolder}/RealEase.Web/bin/Debug/net8.0/RealEase.Web.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/RealEase.Web",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🚀 Iniciar Todo (API + Web)",
+      "configurations": [
+        "RealEase.API (Backend / Swagger)",
+        "RealEase.Web (Frontend MVC)"
+      ],
+      "stopAll": true
+    }
+  ]
+}
