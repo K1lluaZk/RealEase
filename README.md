@@ -56,6 +56,8 @@ Accounts must already exist in Supabase Auth and have a matching active user pro
 
 Both `RealEase.Web` and `RealEase.API` require `ConnectionStrings:DefaultConnection`. Configure it as the `ConnectionStrings__DefaultConnection` environment variable with a PostgreSQL key/value connection string for Supabase, for example `Host=<host>;Port=5432;Database=<database>;Username=<user>;Password=<password>;SSL Mode=Require`. Do not use a `postgres://` URL or commit credentials to `appsettings.json`.
 
+`RealEase.Web` uses `http://localhost:5035/` for the API when running in Development, matching the API's local launch profiles. In other environments, set `Api__BaseUrl` to the HTTPS base URL of `RealEase.API`.
+
 ### Public property browsing
 
 The customer pages separate properties for sale from rentals. Apply the additive marketplace migration in `sql/20261114_customer_marketplace.sql` (or the matching EF Core migration) before deploying the updated API and Web app. Existing properties default to rentals to preserve their current behavior. Set `listing_type` to `sale` and provide `sale_price` for sale listings; add each listing's city. For location-based seller inquiries, set each agent's `service_area` to one or more comma-separated city/area names that match the location entered by customers. Rental inquiries are routed to the agent assigned as the property's owner when that user has the agent role.
