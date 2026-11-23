@@ -100,5 +100,3 @@ Contributions are welcome! If you’d like to help improve RealEase, please:
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Updates may be made in the future.
